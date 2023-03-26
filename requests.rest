@@ -1,28 +1,112 @@
-# API 목록
-GET http://localhost:80
-GET http://localhost:80/register
-GET http://localhost:80/login
+#### API 목록 ###
 
-#API 상세정보
+GET /index
 
-POST http://localhost:80/user/register
-###
+GET /register
 
-POST http://localhost:80/user/register Content-Type: application/json
+GET /login
 
+GET /scan
+
+GET /result
+
+POST /register
+
+POST /login
+
+### API 상세정보 ###
+
+GET /index
 {
-"username":"abcd", "password":"abcd", "re_password":"abcd"
+  200 OK
+  {
+    "rel":"self",
+    "href":"http://localhost:80/index",
+    "method":"GET",
+    "types":["test/xml","application/json"]
+  }
 }
 
-###
-
-POST http://localhost:80/user/login
-###
-
-POST http://localhost:80/user/login Content-Type: application/json
-
+GET /register
 {
-"username":"abcd", "password":"abcd"
+  200 OK
+  {
+    "rel":"self",
+    "href":"http://localhost:80/register",
+    "method":"GET",
+    "types":["test/xml","application/json"]
+  }
 }
 
-###
+GET /login
+{
+  200 OK
+  {
+    "rel":"self",
+    "href":"http://localhost:80/login",
+    "method":"GET",
+    "types":["test/xml","application/json"]
+  }
+}
+
+GET /scan
+{
+  200 OK
+  {
+    "rel":"self",
+    "href":"http://localhost:80/scan",
+    "method":"GET",
+    "types":["test/xml","application/json"]
+  }
+}
+
+GET /result
+{
+  200 OK
+  {
+    "rel":"self",
+    "href":"http://localhost:80/result",
+    "method":"GET",
+    "types":["test/xml","application/json"]
+  }
+}
+
+POST /register
+{
+  "Content-Type":"application/json",
+  "username":"abcd",
+  "password":"abcd",
+  "re_password":"abcd"
+  
+  201 Created
+  {
+    "username":"abcd",
+    "password":"abcd",
+    "links":[
+    {
+      "rel":"self",
+      "href":"http://localhost:80/index",
+      "method":"GET",
+      "types":["test/xml","application/json"]
+    }]
+  }
+}
+
+POST /login
+{
+  "Content-Type":"application/json",
+  "username":"abcd", "password":"abcd"
+
+  201 Created
+  {
+    "username":"abcd",
+    "password":"abcd",
+    "links":[
+    {
+      "rel":"self",
+      "href":"http://localhost:80/index",
+      "method":"GET",
+      "types":["test/xml","application/json"]
+    }]
+  }
+}
