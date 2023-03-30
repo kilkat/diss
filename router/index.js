@@ -17,7 +17,7 @@ router.get("/register", (req, res) => {
     res.render("register.ejs");
 })
 
-router.get("/reflected-xss-success", attack_controller.reflected_xss_success);
+router.get("/reflected-xss-success", attack_controller.reflected_xss_success); //url에 세션 아이디 넘겨줘야됨
 
 router.post("/site-scaning", controller.site-scaning);
 
