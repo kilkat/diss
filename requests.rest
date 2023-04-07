@@ -80,8 +80,10 @@ POST /register
   
   201 Created
   {
+    "email":"abcd",
     "username":"abcd",
     "password":"abcd",
+    "re_password":"abcd",
     "links":[
     {
       "rel":"self",
