@@ -80,10 +80,10 @@ POST /register
   
   201 Created
   {
-    "email":"abcd",
-    "username":"abcd",
-    "password":"abcd",
-    "re_password":"abcd",
+    "email":"example@gmail.com",
+    "username":"example",
+    "password":"example123!",
+    "re_password":"example123!",
     "links":[
     {
       "rel":"self",
@@ -101,8 +101,8 @@ POST /login
 
   201 Created
   {
-    "username":"abcd",
-    "password":"abcd",
+    "email":"abcd@gmail.com",
+    "password":"example123!",
     "links":[
     {
       "rel":"self",
