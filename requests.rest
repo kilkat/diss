@@ -74,9 +74,10 @@ GET /result
 POST /register
 {
   "Content-Type":"application/json",
-  "username":"abcd",
-  "password":"abcd",
-  "re_password":"abcd"
+  "email":"example@gmail.com",
+  "username":"example",
+  "password":"example123!",
+  "re_password":"example123!",
   
   201 Created
   {
