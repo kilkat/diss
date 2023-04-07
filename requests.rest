@@ -75,14 +75,14 @@ POST /register
 {
   "Content-Type":"application/json",
   "email":"example@gmail.com",
-  "username":"example",
+  "name":"example",
   "password":"example123!",
   "re_password":"example123!",
   
   201 Created
   {
     "email":"example@gmail.com",
-    "username":"example",
+    "name":"example",
     "password":"example123!",
     "re_password":"example123!",
     "links":[
