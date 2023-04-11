@@ -4,30 +4,30 @@ const path = require("path");
 
 const router = express.Router();
 
-const attack_controller = require('../controllers/attack')
+const attackController = require('../controllers/attack')
 
-const login_controller = require("../controllers/login.ctrl");
-const register_controller = require("../controllers/register.ctrl");
+const loginController = require("../controllers/login.ctrl");
+const registerController = require("../controllers/register.ctrl");
 
 router.get("*", function (req,res) {
     res.sendFile(path.join(__dirname, '/diss/buid/index.html'))
 })
 
 router.get("/", (req, res) => {
-    res.render("index.ejs");
+    res.render("index.ejs", {session: req.session});
 })
 
 router.get("/login", (req, res) => {
     res.render("login.ejs");
 })
-router.post("/login", login_controller.login_user);
+router.post("/login", loginController.loginUser);
 
 router.get("/register", (req, res) => {
     res.render("register.ejs");
 })
-router.post("/register", register_controller.create_user);
+router.post("/register", registerController.createUser);
 
-router.get("/reflected-xss-success", attack_controller.reflected_xss_success); //url에 세션 아이디 넘겨줘야됨
+router.get("/reflected-xss-success", attackController.reflected_xss_success); //url에 세션 아이디 넘겨줘야됨
 
 // router.post("/site-scaning", controller.site-scaning);
 

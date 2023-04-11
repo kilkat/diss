@@ -42,7 +42,6 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false })); // for body-parser use
 app.use(cookieParser(process.env.COOKIE_SECRET)); //get cookie : secret key
 
-/****
 app.use(session({
 
     resave: false,
@@ -55,7 +54,6 @@ app.use(session({
     name: "session-cookie"
 
 }));
-****/
 
 
 app.use("/", router);
