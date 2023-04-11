@@ -2,7 +2,6 @@ const router = require("express");
 const mysql = require("mysql2");
 const User = require("../models/users");
 const bcrypt = require("bcrypt");
-const { findAll } = require("../models/users");
 
 const email_exp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i; //email regExp
 const password_exp = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,18}$/; //password regExp
