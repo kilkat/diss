@@ -3,12 +3,13 @@ const mysql = require("mysql2");
 const User = require("../models/users");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
+const dotenv = require("dotenv");
 
 const emailExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i; //email regExp
 const passwordExp = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,18}$/; //password regExp
 const spaceExp = /\s/g; //space regExp
 
-const loginUser = async(req, res) => {
+const loginUser = async(req, res, next) => {
     
     const {email, password} = req.body;
    
@@ -30,18 +31,24 @@ const loginUser = async(req, res) => {
         const pass = await bcrypt.compare(password, exUser.password);
 
         if(pass) {
-            req.session.email = email;
-            req.session.is_logined = true;
-            req.session.save(function() {
-            });
-            
-            // JWT 토큰 발급
-            const token = jwt.sign({ userNumber: exUser.number }, 'my_secret_key');
-            
-            // 토큰을 클라이언트에게 보냄
-            // res.json({ token });
-
-            return res.send("<script>alert('로그인에 성공했습니다.');location.href='/';</script>" + {token});
+            const key = process.env.COOKIE_SECRET;
+            console.log(key);
+            let token = '';
+            token = jwt.sign(
+                {
+                  type: "JWT",
+                  email: email,
+                  //profile: profile, 나중에는 admin인지 아닌지 값 넣을것
+                },
+                key,
+                {
+                  expiresIn: "15m", // 15분후 만료
+                  issuer: "토큰발급자",
+                }
+              );
+              console.log(token);
+              // response
+              return res.render("/", {token: token});
         }else{
             return res.send("<script>alert('로그인에 실패했습니다.');location.href='/login';</script>");
         }
