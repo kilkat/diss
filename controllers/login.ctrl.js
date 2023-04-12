@@ -48,7 +48,7 @@ const loginUser = async(req, res, next) => {
               );
               console.log(token);
               // response
-              return res.render("/", {token: token});
+              return res.redirect(`/?token=${token}`);
         }else{
             return res.send("<script>alert('로그인에 실패했습니다.');location.href='/login';</script>");
         }
