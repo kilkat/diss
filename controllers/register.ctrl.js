@@ -10,25 +10,40 @@ const spaceExp = /\s/g; //space regExp
         const {email, name, password, re_password} = req.body;
 
         if(email.match(emailExp) === null || email.match(spaceExp) !== null || email.length > 40){
-            return res.send("<script>alert('지정된 이메일 형식을 사용하세요. 1~40자리 값만 허용합니다. 또한 공백, 띄어쓰기는 허용하지 않습니다.');location.href='/register';</script>");
+            return res.status(401).send({
+                ok: false,
+                message: 'INVALID_EMAIL',
+              });
         };
 
         if(name.match(alphabetExp) === null || name.match(spaceExp) !== null || name.length > 40){
-            return res.send("<script>alert('이름은 1~40자리 알파벳만 허용합니다. 또한 공백, 띄어쓰기는 허용하지 않습니다.');location.href='/register';</script>");
+            return res.status(401).send({
+                ok: false,
+                message: 'INVALID_NAME',
+              });
         };
 
         if(password.match(passwordExp) === null || re_password.match(passwordExp) === null || password.match(spaceExp) !== null || re_password.match(spaceExp) !== null){
-            return res.send("<script>alert('비밀번호 형식은 숫자, 문자, 특수문자 포함 형태의 1~100자리 값만 허용됩니다. 또한 공백, 띄어쓰기는 허용하지 않습니다.');location.href='/register';</script>");
+            return res.status(401).send({
+                ok: false,
+                message: 'INVALID_PASSWORD',
+              });
         };
 
         if(password !== re_password || email.match(spaceExp) !== null){
-            return res.send("<script>alert('비밀번호가 일치하지 않습니다.');location.href='/register';</script>");
+            return res.status(401).send({
+                ok: false,
+                message: 'INVALID_REPASSWORD',
+              });
         };
 
         try{
-            const exUser = await User.findOne({ where: {email: email}});
+            const exUser = await User.findOne({ where: {email: email}}); //user 중복 검사
             if (exUser !== null) {
-                return res.send("<script>alert('중복된 이메일이 있습니다.');location.href='/register';</script>");
+                return res.status(401).send({
+                    ok: false,
+                    message: 'INVALID_USER',
+                  });
             }
 
             if(exUser === null ){
@@ -39,12 +54,21 @@ const spaceExp = /\s/g; //space regExp
                     password: password,
                 });
                 })
-                return res.send("<script>alert('회원가입 되었습니다.');location.href='/';</script>");
+                return res.status(200).send({
+                    ok: true,
+                    message: 'REGISTER_SUCCESS',
+                  });
             }else{
-                return res.send("<script>alert('중복된 정보가 있습니다.');location.href='/register';</script>");
+                return res.status(401).send({
+                    ok: false,
+                    message: 'INVALID_USER',
+                  });
             }
             }catch(err){
-                return res.send("<script>alert('오류가 발생했습니다.');location.href='/register';</script>");
+                return res.status(500).send({
+                    ok: false,
+                    message: 'DB_ERROR',
+                  });
             }
         }
 
