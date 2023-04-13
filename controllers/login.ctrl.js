@@ -14,14 +14,14 @@ const loginUser = async(req, res, next) => {
     const {email, password} = req.body;
    
     if(email.match(emailExp) === null || email.match(spaceExp) !== null){
-        return res.status(400).send({
+        return res.status(401).send({
             ok: false,
             message: 'INVALID_EMAIL',
           });
     };
 
     if(password.match(passwordExp) === null || password.match(spaceExp) !== null){
-        return res.status(400).send({
+        return res.status(401).send({
             ok: false,
             message: 'INVALID_PASSWORD',
           });
