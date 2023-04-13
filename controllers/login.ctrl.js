@@ -14,25 +14,40 @@ const loginUser = async(req, res, next) => {
     const {email, password} = req.body;
    
     if(email.match(emailExp) === null || email.match(spaceExp) !== null){
-        return res.send("<script>alert('지정된 이메일 형식을 사용하세요. 또한 공백, 띄어쓰기는 허용하지 않습니다.');location.href='/login';</script>");
+        return res.status(400).send({
+            ok: false,
+            message: 'emailEXP is incorrect',
+          });
     };
 
     if(password.match(passwordExp) === null || password.match(spaceExp) !== null){
-        return res.send("<script>alert('비밀번호 형식은 숫자, 문자, 특수문자 포함 형태의 8~18자리 값만 허용됩니다. 또한 공백, 띄어쓰기는 허용하지 않습니다.');location.href='/login';</script>");
+        return res.status(400).send({
+            ok: false,
+            message: 'passwordEXP is incorrect',
+          });
     };
 
     try{
         
         const exUser = await User.findOne({where: {email: email}});
+
+        console.log(exUser);
+
         if(!exUser) {
-            return res.send("<script>alert('로그인에 실패했습니다.');location.href='/login';</script>");
+            console.log("login fail");
+            return res.status(401).send({
+                ok: false,
+                message: 'email is incorrect',
+              });
         }
 
         const pass = await bcrypt.compare(password, exUser.password);
 
+        console.log(pass);
+
         if(pass) {
             const key = process.env.COOKIE_SECRET;
-            console.log(key);
+            // console.log(key);
             let token = '';
             token = jwt.sign(
                 {
@@ -42,19 +57,30 @@ const loginUser = async(req, res, next) => {
                 },
                 key,
                 {
-                  expiresIn: "15m", // 15분후 만료
+                  expiresIn: "15m", //15분후 만료
                   issuer: "토큰발급자",
                 }
               );
               console.log(token);
               // response
-              return res.redirect(`/?token=${token}`);
+              return res.status(200).send({ //client에게 토큰 모두를 반환합니다.
+                ok: true,
+                data: {
+                  token
+                },
+              });
         }else{
-            return res.send("<script>alert('로그인에 실패했습니다.');location.href='/login';</script>");
+            return res.status(401).send({
+                ok: false,
+                message: 'password is incorrect',
+              });
         }
     }catch(err){
         console.log(err);
-        res.send("<script>alert('로그인에 실패했습니다.');location.href='/login';</script>");
+            return res.status(500).send({
+                ok: false,
+                message: 'error',
+              });
     }
 
 }
