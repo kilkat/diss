@@ -16,14 +16,14 @@ const loginUser = async(req, res, next) => {
     if(email.match(emailExp) === null || email.match(spaceExp) !== null){
         return res.status(400).send({
             ok: false,
-            message: 'emailEXP is incorrect',
+            message: 'INVALID_EMAIL',
           });
     };
 
     if(password.match(passwordExp) === null || password.match(spaceExp) !== null){
         return res.status(400).send({
             ok: false,
-            message: 'passwordEXP is incorrect',
+            message: 'INVALID_PASSWORD',
           });
     };
 
@@ -31,13 +31,13 @@ const loginUser = async(req, res, next) => {
         
         const exUser = await User.findOne({where: {email: email}});
 
-        console.log(exUser);
+        console.log(exUser.name);
 
         if(!exUser) {
             console.log("login fail");
             return res.status(401).send({
                 ok: false,
-                message: 'email is incorrect',
+                message: 'INCOLLECT_EMAIL',
               });
         }
 
@@ -53,6 +53,7 @@ const loginUser = async(req, res, next) => {
                 {
                   type: "JWT",
                   email: email,
+                  name: exUser.name,
                   //profile: profile, 나중에는 admin인지 아닌지 값 넣을것
                 },
                 key,
@@ -72,14 +73,14 @@ const loginUser = async(req, res, next) => {
         }else{
             return res.status(401).send({
                 ok: false,
-                message: 'password is incorrect',
+                message: 'INCOLLECT_PASSWORD',
               });
         }
     }catch(err){
         console.log(err);
             return res.status(500).send({
                 ok: false,
-                message: 'error',
+                message: 'DB_ERROR',
               });
     }
 
