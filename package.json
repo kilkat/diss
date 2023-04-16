@@ -29,6 +29,8 @@
     "jsonwebtoken": "^9.0.0",
     "morgan": "^1.10.0",
     "mysql2": "^3.2.0",
+    "request": "^2.88.2",
+    "requests": "^0.3.0",
     "sequelize": "^6.30.0",
     "sequelize-cli": "^6.6.0"
   },
