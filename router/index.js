@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
-const scanningResultController = require('../controllers/scanningResult')
 const scanningController = require('../controllers/scanning');
 
 const loginController = require("../controllers/login.ctrl");
@@ -31,7 +30,7 @@ router.get("/register", (req, res) => {
 })
 router.post("/register", registerController.createUser);
 
-router.get("/reflected-xss-success", scanningResultController.scanningResult); //url에 세션 아이디 넘겨줘야됨
+router.get("/reflected-xss-success", scanningController.scanning); //url에 세션 아이디 넘겨줘야됨
 
 router.get('/protected', (req, res) => {
     // 헤더에서 토큰을 가져옴
