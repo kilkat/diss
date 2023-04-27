@@ -1,5 +1,6 @@
 const fs = require('fs');
 const readline = require('readline');
+const request = require('request');
 
 const array = fs.readFileSync('payload.txt').toString().split("\n");
 
