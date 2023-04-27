@@ -2,21 +2,16 @@ const fs = require('fs');
 const readline = require('readline');
 const req = require('request');
 
-const href = req.body;
-
 const array = fs.readFileSync('payload.txt').toString().split("\n");
 
 const scanning = async(req, res) => {
     try{
 
         for (let i in array) {
-            let victim_url = url + "?" + array[i];
+            let victim_url = req.body + "?" + array[i];
             console.log(victim_url);
             const options = {
-                url: href,
-                form: {
-                    data: i
-                }
+                url: victim_url,
             };
             request.post(options, function(error, response, body) {
                 if (!error && response.statusCode == 200) {
