@@ -18,8 +18,6 @@ router.get("/", (req, res) => {
     res.render("index.ejs", {session: req.session});
 })
 
-router.post("/", scanningController.scanning)
-
 router.get("/login", (req, res) => {
     res.render("login.ejs");
 })
@@ -30,7 +28,9 @@ router.get("/register", (req, res) => {
 })
 router.post("/register", registerController.createUser);
 
-router.get("/reflected-xss-success", scanningController.scanning); //url에 세션 아이디 넘겨줘야됨
+router.post("/scan", scanningController.scanning)
+
+// router.get("/reflected-xss-success", scanningController.scanning); //url에 세션 아이디 넘겨줘야됨
 
 router.get('/protected', (req, res) => {
     // 헤더에서 토큰을 가져옴
