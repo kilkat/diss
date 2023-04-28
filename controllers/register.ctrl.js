@@ -7,6 +7,7 @@ const passwordExp =  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{
 const alphabetExp = /^[a-zA-Z]*$/; //alphabet regExp
 const spaceExp = /\s/g; //space regExp
     const createUser = async(req, res) => {
+
         const {email, name, password, re_password} = req.body;
 
         if(email.match(emailExp) === null || email.match(spaceExp) !== null || email.length > 40){

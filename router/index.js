@@ -28,7 +28,9 @@ router.get("/register", (req, res) => {
 })
 router.post("/register", registerController.createUser);
 
-router.post("/scan", scanningController.scanning)
+router.post("/scan", scanningController.scanning);
+
+router.get("/count", scanningController.count);
 
 // router.get("/reflected-xss-success", scanningController.scanning); //url에 세션 아이디 넘겨줘야됨
 
