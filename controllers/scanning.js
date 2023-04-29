@@ -27,13 +27,19 @@ const scanning = async(req, res) => {
       }
 };
 
-//victim_url을 result page로 보내고 result page에서 몇개의 xss가 성공했는지 count해서 result output 해주는 로직을 짜야함
+//victim_url을 result page로 보내고 result page에서 몇개의 xss가 성공했는지 result해서 result output 해주는 로직을 짜야함
 
-const count = async(req, res) => {
-    console.log("success");
+const resultCount = 0
+
+const result = async(req, res) => {
+    console.log("※SUCCESS※");
+    console.log("Scanning count is" + resultCount);
+    // console.log("Payload is" + victim_url);
+    console.log("---------------------------------------------------------")
+    resultCount += 1
 }
 
 module.exports = {
     scanning,
-    count,
+    result,
 }
