@@ -5,6 +5,7 @@ const puppeteer = require('puppeteer');
 
 const array = fs.readFileSync('payload.txt').toString().split("\n");
 
+//input 태그 찾는 로직 추가해야됨, front: 데이터 넘어가면 result 페이지로 redirect 시켜야됨
 const scanning = async(req, res) => {
     const url = req.body.href;
 
@@ -24,14 +25,12 @@ const scanning = async(req, res) => {
           continue;
         }
       }
-      
 };
 
+//victim_url을 result page로 보내고 result page에서 몇개의 xss가 성공했는지 count해서 result output 해주는 로직을 짜야함
+
 const count = async(req, res) => {
-    let cnt = 0;
-    console.log(cnt);
-    cnt += 1;
-    console.log(cnt);
+    console.log("success");
 }
 
 module.exports = {
