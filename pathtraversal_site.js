@@ -1,10 +1,9 @@
 const express = require('express');
 const fs = require('fs');
-
 const app = express();
 
-app.get('/download/:file', (req, res) => {
-  const fileName = req.params.file;
+app.get('/download', (req, res) => {
+  const fileName = req.query.file;
   const filePath = `${__dirname}/uploads/${fileName}`;
   fs.readFile(filePath, (err, data) => {
     if (err) {
