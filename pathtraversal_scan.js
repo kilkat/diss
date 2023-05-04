@@ -27,8 +27,8 @@ async function test() {
             console.log(victim_url);
             console.log("-------------------------------------------------------------------------------");
         }   
-        catch(err) {
-            continue
+        catch(error) {
+            continue;
         }
         }
 
