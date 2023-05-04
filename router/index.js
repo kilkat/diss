@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
-const scanningController = require('../controllers/scanning');
+const scanningController = require('../controllers/scan.ctrl');
 
 const loginController = require("../controllers/login.ctrl");
 const registerController = require("../controllers/register.ctrl");
@@ -28,7 +28,9 @@ router.get("/register", (req, res) => {
 })
 router.post("/register", registerController.createUser);
 
-router.post("/scan", scanningController.scanning);
+router.post("/xss_scan", scanningController.xss_scan);
+
+router.post("/pathtraversal_scan", scanningController.pathtraversal_scan);
 
 router.get("/result", scanningController.result);
 
