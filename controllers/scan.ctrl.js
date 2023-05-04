@@ -55,7 +55,6 @@ const pathtraversal_scan = async(req, res) => {
 }
 
 //victim_url을 result page로 보내고 result page에서 몇개의 xss가 성공했는지 result해서 result output 해주는 로직을 짜야함
-
 const resultCount = 0
 
 const result = async(req, res) => {
