@@ -11,7 +11,7 @@ const loginController = require("../controllers/login.ctrl");
 const registerController = require("../controllers/register.ctrl");
 
 router.get("*", function (req,res) {
-    res.sendFile(path.join(__dirname, '/diss/buid/index.html'))
+    res.sendFile(path.join(__dirname, '/../build/index.html'))
 })
 
 router.get("/", (req, res) => {
@@ -28,9 +28,9 @@ router.get("/register", (req, res) => {
 })
 router.post("/register", registerController.createUser);
 
-router.post("/xss_scan", scanningController.xss_scan);
+router.post("/scan", scanningController.xss_scan);
 
-router.post("/pathtraversal_scan", scanningController.pathtraversal_scan);
+router.post("/scan", scanningController.pathtraversal_scan);
 
 router.get("/result", scanningController.result);
 
