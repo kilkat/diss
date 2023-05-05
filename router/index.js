@@ -28,9 +28,11 @@ router.get("/register", (req, res) => {
 })
 router.post("/register", registerController.createUser);
 
-router.post("/scan", scanningController.xss_scan);
+router.post("/scan_injection", scanningController.xss_scan);
 
-router.post("/scan", scanningController.pathtraversal_scan);
+router.get("/scan_injection", scanningController.xss_scan_result)
+
+router.post("/scan_traversal", scanningController.pathtraversal_scan);
 
 router.get("/result", scanningController.result);
 

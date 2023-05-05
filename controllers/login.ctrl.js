@@ -1,6 +1,6 @@
 const router = require("express");
 const mysql = require("mysql2");
-const User = require("../models/users");
+const user = require("../models/users");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const dotenv = require("dotenv");
@@ -29,7 +29,7 @@ const loginUser = async(req, res, next) => {
 
     try{
         
-        const exUser = await User.findOne({where: {email: email}});
+        const exUser = await user.findOne({where: {email: email}});
 
         console.log(exUser.name);
 

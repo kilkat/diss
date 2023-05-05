@@ -4,6 +4,9 @@ const open = require('open');
 const puppeteer = require('puppeteer');
 const http = require('http');
 const { response } = require('express');
+const scan = require("../models/scan");
+const express = require("express");
+const router = express.Router();
 
 const array = fs.readFileSync('payload.txt').toString().split("\n");
 
@@ -12,12 +15,24 @@ const xss_scan = async(req, res) => {
     const url = req.body.href;
 
     for (let i in array) {
+
         try {
           let victim_url = url + array[i];
           console.log(victim_url);
       
           const browser = await puppeteer.launch({headless:'new'});
           const page = await browser.newPage();
+
+
+          // 성공 시 요청받을 페이지 만들어지면 해당 페이지에서 사용 예정
+
+          // if (req.url === 'http://127.0.0.1/scan_injection') {
+          //     scan.create({
+          //       scanType: "Reflected XSS",
+          //       scanURL: url,
+          //       scanPayload: array[i]
+          //     });
+          // };
 
           await page.setDefaultNavigationTimeout(1);
           await page.goto(victim_url);
@@ -29,25 +44,59 @@ const xss_scan = async(req, res) => {
       }
 };
 
+const xss_scan_result = async(req, res) => {
+  
+  const referer = req.headers
+
+  scan.create({
+    scanType: referer.type,
+    scanURL: referer,
+    scanPayload: referer.payload
+  });
+
+  // console.log("※SUCCESS※");
+  // console.log("Scanning count is " + resultCount);
+  //console.log("Payload is " + victim_url);
+  // console.log("---------------------------------------------------------")
+  resultCount += 1;
+};
+
 //path traversal 취약점 스캔로직
 const pathtraversal_scan = async(req, res) => {
   const url =req.body.href;
   const payload = "../";
   let success_url = [];
 
+  const referer = req.headers.referer
+
   console.log("-------------------------------------------------------------------------------");
 
     for (let i = 0; i < 10; i++) {
         try {
-            let victim_url = url + payload.repeat(i + 1) + "etc/passwd";
+            scan_payload = payload.repeat(i + 1) + "etc/passwd"
+            let victim_url = url + scan_payload;
+
+            const options = {
+              method: 'GET',
+              headers: {
+                'X-Type': 'Path traversal'
+              }
+            };
+
             const response = await new Promise(resolve => {
-                http.request(victim_url, resolve).end();
+                http.request(victim_url, options, resolve).end();
             });
             const status = response.statusCode;
 
             console.log(status);
 
             if (status === 200) {
+              
+                scan.create({
+                  scanType: "Path traversal",
+                  scanURL: referer,
+                  scanPayload: scan_payload
+                });
                 success_url.push(victim_url);
                 console.log(victim_url);
                 console.log("-------------------------------------------------------------------------------");
@@ -75,6 +124,7 @@ const result = async(req, res) => {
 
 module.exports = {
     xss_scan,
+    xss_scan_result,
     pathtraversal_scan,
     result,
 }

@@ -7,7 +7,8 @@ const process = require('process');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
-const User  = require('./users');
+const scan  = require('./scan');
+const user  = require('./users');
 const db = {};
 
 let sequelize;
@@ -20,9 +21,14 @@ if (config.use_env_variable) {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-db.User = User;
-User.init(sequelize);
+db.scan = scan;
+scan.init(sequelize);
 
-User.associate(db);
+scan.associate(db);
+
+db.user = user;
+user.init(sequelize);
+
+user.associate(db);
 
 module.exports = db;

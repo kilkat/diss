@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const mysql = require("mysql2");
 const bcrypt = require('bcrypt');
-const User = require("../models/users");
+const user = require("../models/users");
 const emailExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i; //email regExp
 const passwordExp =  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{1,100}$/; //password regExp
 const alphabetExp = /^[a-zA-Z]*$/; //alphabet regExp
@@ -49,7 +49,7 @@ const spaceExp = /\s/g; //space regExp
 
             if(exUser === null ){
                 bcrypt.hash(password, 10, (err, password) => {
-                User.create({
+                user.create({
                     email: email,
                     name: name,
                     password: password,
