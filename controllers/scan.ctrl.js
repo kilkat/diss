@@ -72,15 +72,8 @@ const pathtraversal_scan = async(req, res) => {
             scan_payload = payload.repeat(i + 1) + "etc/passwd"
             let victim_url = url + scan_payload;
 
-            const options = {
-              method: 'GET',
-              headers: {
-                'X-Type': 'Path traversal'
-              }
-            };
-
             const response = await new Promise(resolve => {
-                http.request(victim_url, options, resolve).end();
+                http.request(victim_url, resolve).end();
             });
             const status = response.statusCode;
 
@@ -104,23 +97,16 @@ const pathtraversal_scan = async(req, res) => {
         catch(error) {
             continue;
         }
+        finally {
+          const scanResult = await scan.findAll({ where: { scanType: "Path traversal" } });
+          return res.send(JSON.stringify(scanResult));
+
         }
-}
-
-//victim_url을 result page로 보내고 result page에서 몇개의 xss가 성공했는지 result해서 result output 해주는 로직을 짜야함
-const resultCount = 0
-
-const result = async(req, res) => {
-    console.log("※SUCCESS※");
-    console.log("Scanning count is" + resultCount);
-    // console.log("Payload is" + victim_url);
-    console.log("---------------------------------------------------------")
-    resultCount += 1
+        }
 }
 
 module.exports = {
     xss_scan,
     xss_scan_success,
     pathtraversal_scan,
-    result,
 }

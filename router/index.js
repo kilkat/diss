@@ -10,6 +10,7 @@ const scanningController = require('../controllers/scan.ctrl');
 const loginController = require("../controllers/login.ctrl");
 const registerController = require("../controllers/register.ctrl");
 
+
 router.post("/login", loginController.loginUser);
 
 router.post("/register", registerController.createUser);
@@ -19,8 +20,6 @@ router.post("/scan_injection", scanningController.xss_scan);
 router.get("/scan_injection_success", scanningController.xss_scan_success)
 
 router.post("/scan_traversal", scanningController.pathtraversal_scan);
-
-router.get("/result", scanningController.result);
 
 // router.get("/reflected-xss-success", scanningController.scanning); //url에 세션 아이디 넘겨줘야됨
 
