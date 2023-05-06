@@ -10,10 +10,6 @@ const scanningController = require('../controllers/scan.ctrl');
 const loginController = require("../controllers/login.ctrl");
 const registerController = require("../controllers/register.ctrl");
 
-router.get("", function (req,res) {
-    res.sendFile(path.join(__dirname, '/../build/index.html'))
-})
-
 router.post("/login", loginController.loginUser);
 
 router.post("/register", registerController.createUser);
