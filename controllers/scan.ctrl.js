@@ -10,29 +10,42 @@ const router = express.Router();
 
 const array = fs.readFileSync('payload.txt').toString().split("\n");
 
+
+
+let xss_scan_success_data = false
+
+const xss_scan_success = async(req, res) => {
+
+  xss_scan_success_data = true
+
+  return xss_scan_success_data
+}
+
 //input 태그 찾는 로직 추가해야됨, front: 데이터 넘어가면 result 페이지로 redirect 시켜야됨
 const xss_scan = async(req, res) => {
     const url = req.body.href;
 
     for (let i in array) {
 
+        payload = array[i]
+
         try {
-          let victim_url = url + array[i];
+          let victim_url = url + payload;
           console.log(victim_url);
       
           const browser = await puppeteer.launch({headless:'new'});
           const page = await browser.newPage();
 
+          if (xss_scan_success_data) {
+            scan.create({
+              scanType: "Reflected XSS",
+              scanURL: url,
+              scanPayload: payload
+            });
 
-          // 성공 시 요청받을 페이지 만들어지면 해당 페이지에서 사용 예정
+            xss_scan_success_data = false
 
-          // if (req.url === 'http://127.0.0.1/scan_injection') {
-          //     scan.create({
-          //       scanType: "Reflected XSS",
-          //       scanURL: url,
-          //       scanPayload: array[i]
-          //     });
-          // };
+          }
 
           await page.setDefaultNavigationTimeout(1);
           await page.goto(victim_url);
@@ -42,23 +55,6 @@ const xss_scan = async(req, res) => {
           continue;
         }
       }
-};
-
-const xss_scan_result = async(req, res) => {
-  
-  const referer = req.headers
-
-  scan.create({
-    scanType: referer.type,
-    scanURL: referer,
-    scanPayload: referer.payload
-  });
-
-  // console.log("※SUCCESS※");
-  // console.log("Scanning count is " + resultCount);
-  //console.log("Payload is " + victim_url);
-  // console.log("---------------------------------------------------------")
-  resultCount += 1;
 };
 
 //path traversal 취약점 스캔로직
@@ -124,7 +120,7 @@ const result = async(req, res) => {
 
 module.exports = {
     xss_scan,
-    xss_scan_result,
+    xss_scan_success,
     pathtraversal_scan,
     result,
 }

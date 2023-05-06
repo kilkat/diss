@@ -49,6 +49,8 @@ app.use(session({
     name: "session-cookie"
 }));
 
+process.setMaxListeners(15);
+
 app.use("/", router);
 
 app.use((req, res, next) => {

