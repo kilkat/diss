@@ -75,10 +75,6 @@ const pathtraversal_scan = async(req, res) => {
             });
             const status = response.statusCode;
 
-            console.log(status);
-            console.log(referer)
-            console.log("url : " + url)
-
             if (status === 200) {
               
                 scan.create({
@@ -87,7 +83,6 @@ const pathtraversal_scan = async(req, res) => {
                   scanPayload: scan_payload
                 });
 
-                success_url.push(victim_url);
                 console.log(victim_url);
                 console.log("-------------------------------------------------------------------------------");
                 break;
