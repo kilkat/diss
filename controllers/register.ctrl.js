@@ -39,7 +39,7 @@ const spaceExp = /\s/g; //space regExp
         };
 
         try{
-            const exUser = await User.findOne({ where: {email: email}}); //user 중복 검사
+            const exUser = await user.findOne({ where: {email: email}}); //user 중복 검사
             if (exUser !== null) {
                 return res.status(401).send({
                     ok: false,
