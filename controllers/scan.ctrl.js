@@ -63,8 +63,6 @@ const pathtraversal_scan = async(req, res) => {
   const payload = "../";
   let success_url = [];
 
-  const referer = req.headers.referer
-
   console.log("-------------------------------------------------------------------------------");
 
     for (let i = 0; i < 10; i++) {
@@ -77,16 +75,14 @@ const pathtraversal_scan = async(req, res) => {
             });
             const status = response.statusCode;
 
-            console.log(status);
-
             if (status === 200) {
               
                 scan.create({
                   scanType: "Path traversal",
-                  scanURL: referer,
+                  scanURL: url,
                   scanPayload: scan_payload
                 });
-                success_url.push(victim_url);
+
                 console.log(victim_url);
                 console.log("-------------------------------------------------------------------------------");
                 break;
@@ -97,11 +93,11 @@ const pathtraversal_scan = async(req, res) => {
         catch(error) {
             continue;
         }
-        finally {
-          const scanResult = await scan.findAll({ where: { scanType: "Path traversal" } });
-          return res.send(JSON.stringify(scanResult));
+        // finally {
+        //   const scanResult = await scan.findAll({ where: { scanType: "Path traversal" } });
+        //   return res.send(JSON.stringify(scanResult));
 
-        }
+        // }
         }
 }
 
