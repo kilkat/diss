@@ -35,8 +35,6 @@ async function crawl(url, depth) {
             }
           }
         });
-      } else {
-        console.log(`Error: Failed to fetch URL (${response.status}) - ${url}`);
       }
     } catch (error) {
       
