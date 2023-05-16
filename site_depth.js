@@ -11,33 +11,41 @@ const outputFileName = 'result.txt';
 const visitedUrls = new Set();
 
 async function crawl(url, depth) {
-  try {
-    if (visitedUrls.has(url)) {
-      return;
-    }
+  while(true){
 
-    visitedUrls.add(url);
-
-    const response = await axios.get(url);
-    if (response.status === 200) {
-      const html = response.data;
-
-      const $ = cheerio.load(html);
-
-      $('a').each((index, element) => {
-        const href = $(element).attr('href');
-        if (href && href.startsWith('/')) {
-          const absoluteUrl = new URL(href, url).href;
-          if (depth < maxDepth) {
-            crawl(absoluteUrl, depth + 1);
+    try {
+      if (visitedUrls.has(url)) {
+        return;
+      }
+  
+      visitedUrls.add(url);
+  
+      const response = await axios.get(url);
+      if (response.status === 200) {
+        const html = response.data;
+  
+        const $ = cheerio.load(html);
+  
+        $('a').each((index, element) => {
+          const href = $(element).attr('href');
+          if (href && href.startsWith('/')) {
+            const absoluteUrl = new URL(href, url).href;
+            if (depth < maxDepth) {
+              crawl(absoluteUrl, depth + 1);
+            }
           }
-        }
-      });
-    } else {
-      console.log(`Error: Failed to fetch URL (${response.status}) - ${url}`);
+        });
+      } else {
+        console.log(`Error: Failed to fetch URL (${response.status}) - ${url}`);
+      }
+    } catch (error) {
+      
+      continue;
+      // console.error('Error:', error);
     }
-  } catch (error) {
-    console.error('Error:', error);
+
+    break;
+
   }
 }
 
