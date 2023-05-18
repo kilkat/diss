@@ -1,8 +1,9 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
+const fs = require('fs');
 
 // root url 설정
-const ROOT_URL = 'http://192.168.222.128:3000';
+const ROOT_URL = 'http://127.0.0.1:3000';
 
 let visited = {};
 
@@ -31,9 +32,23 @@ async function crawl(url) {
     // 모든 링크에 대해 동시에 crawl을 호출 (DFS)
     await Promise.all(links.map(crawl));
 
+    // URL 저장
+    saveUrl(url);
+
   } catch (error) {
     console.log(`Error in accessing ${url}: `, error.message);
+    // 실패한 URL 저장
+    saveUrl(url);
   }
+}
+
+function saveUrl(url) {
+  const urlWithNewLine = url + '\n';
+  fs.appendFile('site_tree.txt', urlWithNewLine, (err) => {
+    if (err) {
+      console.error('Error in saving site tree:', err);
+    }
+  });
 }
 
 crawl(ROOT_URL);
