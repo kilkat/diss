@@ -1,6 +1,0 @@
-https://hive.cju.ac.kr/common/greeting.do
-https://hive.cju.ac.kr/common/login/loginpage.do
-https://hive.cju.ac.kr/common/menu/html/900000/detail.do
-https://hive.cju.ac.kr/course/active/mooc/list.do
-https://hive.cju.ac.kr/portal/issue/issue.list2
-https://hive.cju.ac.kr/system/bbs/notice/list.do
