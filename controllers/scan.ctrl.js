@@ -72,13 +72,14 @@ const pathtraversal_scan = async(req, res) => {
 
     // for (let i =0; i < 10; i++) {
         try {
-          // site_depth.crawl(url, 1)
-          // .then(() => {
-          //   site_depth.saveVisitedUrls(outputFileName);
-          // })
-          // .catch((error) => {
-          //   console.error('Error:', error);
-          // });
+
+          startCrawling(url)
+            .then(() => {
+              console.log('Crawling completed successfully.');
+            })
+            .catch(error => {
+              console.error('An error occurred while crawling:', error);
+            });
 
           const site_tree = fs.readFileSync('site_tree.txt').toString().split("\n");
 
@@ -98,43 +99,42 @@ const pathtraversal_scan = async(req, res) => {
               // console.log('2')
               let victim_url = site_tree[i].substr(0, match2 + 1) + scan_payload;
 
-              // while((match2 = regexp.exec()))
-
               console.log(victim_url);
 
-              // const response = await new Promise(resolve => {
-              //     http.request(victim_url, resolve).end();
-              // });
-              // const status = response.statusCode;
+              const response = await new Promise(resolve => {
+                  http.request(victim_url, resolve).end();
+              });
+              const status = response.statusCode;
 
-              // if (status === 200) {
+              if (status === 200) {
                 
-              //     scan.create({
-              //       scanType: "Path traversal",
-              //       scanURL: url,
-              //       scanPayload: scan_payload
-              //     });
+                  scan.create({
+                    scanType: "Path traversal",
+                    scanURL: url,
+                    scanPayload: scan_payload
+                  });
 
-              //     console.log(victim_url);
-              //     console.log("-------------------------------------------------------------------------------");
-              //     break;
-              // }
-              // console.log(victim_url);
-              // console.log("-------------------------------------------------------------------------------");
-            }else if(match1 !== -1 && match2.length !== -1 && match3.length > 1 && match4 !== -1){
-
-              scan_payload = payload.repeat(10) + "etc/passwd"
-
-              while ((match = regexp.exec(site_tree[i])) !== null) {
-                position = match.index;
+                  console.log(victim_url);
+                  console.log("-------------------------------------------------------------------------------");
+                  break;
               }
-              console.log(position);
-
-              //위치 계산해서 payload 합치면됨
-
-              // console.log(victim_url);
-
+              console.log(victim_url);
+              console.log("-------------------------------------------------------------------------------");
             }
+            // else if(match1 !== -1 && match2.length !== -1 && match3.length > 1 && match4 !== -1){
+
+            //   scan_payload = payload.repeat(10) + "etc/passwd"
+
+            //   while ((match = regexp.exec(site_tree[i])) !== null) {
+            //     position = match.index;
+            //   }
+            //   console.log(position);
+
+            //   //위치 계산해서 payload 합치면됨
+
+            //   // console.log(victim_url);
+
+            // }
             else{
               console.log('query가 발견되지 않았습니다.');
             }
