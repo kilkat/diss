@@ -2,30 +2,27 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const fs = require('fs');
 
-const startUrl = 'https://hive.cju.ac.kr/common/greeting.do';
+const maxDepth = 2;
 
-const maxDepth = 10;
-
-const outputFileName = 'result.txt';
+const outputFileName = 'site_tree.txt';
 
 const visitedUrls = new Set();
 
 async function crawl(url, depth) {
-  while(true){
-
+  while (true) {
     try {
       if (visitedUrls.has(url)) {
         return;
       }
-  
+
       visitedUrls.add(url);
-  
+
       const response = await axios.get(url);
       if (response.status === 200) {
         const html = response.data;
-  
+
         const $ = cheerio.load(html);
-  
+
         $('a').each((index, element) => {
           const href = $(element).attr('href');
           if (href && href.startsWith('/')) {
@@ -37,23 +34,19 @@ async function crawl(url, depth) {
         });
       }
     } catch (error) {
-      
       continue;
-      // console.error('Error:', error);
     }
 
     break;
-
   }
 }
 
-crawl(startUrl, 1)
-  .then(() => {
+module.exports = {
+  crawl: crawl,
+  saveVisitedUrls: function (fileName) {
     const urlsArray = Array.from(visitedUrls);
     const urlsString = urlsArray.join('\n');
-    fs.writeFileSync(outputFileName, urlsString);
-    console.log(`Visited URLs saved to ${outputFileName}`);
-  })
-  .catch((error) => {
-    console.error('Error:', error);
-  });
+    fs.writeFileSync(fileName, urlsString);
+    console.log(`Visited URLs saved to ${fileName}`);
+  },
+};
