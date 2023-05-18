@@ -32,3 +32,10 @@
   /scan.ctrl.js  
   > 사이트 트리 뽑는 로직 구현완료  
   > 코드 작성자: ChatGPT4.0  
+
+<br>
+
+- **23/05/18**  
+  /scan.ctrl.js, /site_depth.js -> crawl_depth.js  
+  > 사이트 트리 뽑는 로직 분리완료, 이름변경  
+  > 코드 작성자: 김광운  

@@ -8,7 +8,7 @@ const http = require('http');
 const { response } = require('express');
 const scan = require("../models/scan");
 const express = require("express");
-const crawl = require('../site_depth');
+const crawl = require('../crawl_depth');
 const path_scan = require('../pathtraversal_scan');
 const router = express.Router();
 
@@ -68,46 +68,7 @@ const pathtraversal_scan = async(req, res) => {
   const payload = "../";
   const regexp = /=/g;
 
-  const crawl = async (url) => {
-    if (visited[url]) {
-      return;
-    }
-
-    try {
-      const response = await axios.get(url);
-      visited[url] = true;
-
-      const $ = cheerio.load(response.data);
-      let links = [];
-
-      $('a').each((index, element) => {
-        let href = $(element).attr('href');
-        if (href.startsWith('/')) {
-          links.push(url + href);
-        }
-      });
-
-      console.log(`Found ${links.length} links at ${url}`);
-      await Promise.all(links.map(crawl));
-      saveUrl(url);
-
-    } catch (error) {
-      console.log(`Error in accessing ${url}: `, error.message);
-      saveUrl(url);
-    }
-  };
-
-  let visited = {};
   await crawl(url);
-
-  function saveUrl(url) {
-    const urlWithNewLine = url + '\n';
-    fs.appendFileSync('site_tree.txt', urlWithNewLine, (err) => {
-      if (err) {
-        console.error('Error in saving site tree:', err);
-      }
-    });
-  }
 
   const site_tree = fs.readFileSync('site_tree.txt').toString().split("\n");
 

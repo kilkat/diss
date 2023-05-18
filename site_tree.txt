@@ -1,0 +1,5 @@
+http://127.0.0.1:3000/xss
+http://127.0.0.1:3000/os_command_injection
+http://127.0.0.1:3000/path_traversal/download?file=
+http://127.0.0.1:3000/path_traversal
+http://127.0.0.1:3000
