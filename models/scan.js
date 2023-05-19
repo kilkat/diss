@@ -11,13 +11,30 @@ module.exports = class scan extends Sequelize.Model {
           autoIncrement: true,
           primaryKey: true,
         },
+        scanID: {
+          type: Sequelize.INTEGER,
+          allowNull: true,
+          required: true,
+          unique: false,
+        },
+        scanUserEmail: {
+          type: Sequelize.STRING(40),
+          allowNull: true,
+          required: true,
+          unique: true,
+        },
         scanType: {
           type: Sequelize.STRING(40),
           allowNull: false,
           required: true,
           unique: false,
-          defaultValue: 0,
         },
+        inputURL: {
+          type:Sequelize.STRING(500),
+          allowNull: false,
+          required: true,
+          unique: false,
+      },
         scanURL: {
             type:Sequelize.STRING(500),
             allowNull: false,

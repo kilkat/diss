@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/rhkddns3459/Development-the-Injection-Scanning-Site-DISS-#readme",
   "dependencies": {
+    "async-lock": "^1.4.0",
     "axios": "^1.3.4",
     "bcrypt": "^5.1.0",
     "better-opn": "^3.0.2",
