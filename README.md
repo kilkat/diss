@@ -42,7 +42,7 @@
 
 <br>
 
-- **23/05/18**  
+- **23/05/19**  
   /scan.ctrl.js, /crawl_depth.js, /models/scan.js
   > scan 결과 구분할 수 있도록 scan 테이블 변경, Path Traversal 및 Reflected XSS가 사이트 뎁스 뽑은 후 각각 스캔하도록 구현, site_depth /xss/xss로 잘못 뽑히는 오류 해결, site_tree 파일 내용 초기화 안 되는 오류 해결, 사용자가 요청한 스캔을 scanID의 숫자로 구분(1부터 1씩 증가)
   > 코드 작성자: ChatGPT4.0
