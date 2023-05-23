@@ -13,9 +13,11 @@ const path_scan = require('../pathtraversal_scan');
 const AsyncLock = require('async-lock');
 const lock = new AsyncLock();
 const router = express.Router();
+const { exec } = require('child_process');
 
 
-const payload_arr = fs.readFileSync('payload.txt').toString().split("\n");
+const xss_payload_arr = fs.readFileSync('xss_payload.txt').toString().split("\n");
+const os_command_injection_payload_arr = fs.readFileSync('os_command_injection_payload.txt').toString().split("\n");
 
 
 let xss_scan_success_data = false
@@ -59,12 +61,12 @@ const xss_scan = async(req, res) => {
     const match4 = site_tree[i].indexOf("&");
 
     if(match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1){
-      for (let j in payload_arr) {
-        payload = payload_arr[j];
+      for (let j in xss_payload_arr) {
+        xss_payload = xss_payload_arr[j];
 
         try {
           let victim_base_url = site_tree[i].substr(0, match2 + 1)
-          let victim_url = victim_base_url + payload;
+          let victim_url = victim_base_url + xss_payload;
           console.log(victim_url);
 
           const browser = await puppeteer.launch({headless:'new'});
@@ -76,7 +78,7 @@ const xss_scan = async(req, res) => {
               scanType: "Reflected XSS",
               inputURL: url,
               scanURL: victim_base_url,
-              scanPayload: payload
+              scanPayload: xss_payload
             });
   
             xss_scan_success_data = false
@@ -100,7 +102,7 @@ const pathtraversal_scan = async(req, res) => {
   const currentScanID = await getNewScanID();
 
   const url = req.body.href;
-  const payload = "../";
+  const path_traversal_payload_arr = "../";
   const regexp = /=/g;
 
   await crawl(url);
@@ -116,8 +118,8 @@ const pathtraversal_scan = async(req, res) => {
     if(match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1){
       for (let j = 0; j < 10; j++) {
         try {
-          let scan_payload = payload.repeat(j + 1) + "etc/passwd"
-          let victim_url = site_tree[i].substr(0, match2 + 1) + scan_payload;
+          let path_traversal_scan_payload = path_traversal_payload_arr.repeat(j + 1) + "etc/passwd"
+          let victim_url = site_tree[i].substr(0, match2 + 1) + path_traversal_scan_payload;
 
           const response = await new Promise(resolve => {
               http.request(victim_url, resolve).end();
@@ -128,10 +130,10 @@ const pathtraversal_scan = async(req, res) => {
           
               scan.create({
               scanID: currentScanID,
-              scanType: "Path traversal",
+              scanType: "Path Traversal",
               inputURL: url,
               scanURL: site_tree[i],
-              scanPayload: scan_payload
+              scanPayload: path_traversal_scan_payload
               });
               break;
           }
@@ -147,10 +149,45 @@ const pathtraversal_scan = async(req, res) => {
   }       
 }
 
+const os_command_injection = async (req, res) => {
+  const currentScanID = await getNewScanID();
+  const url = req.body.href;
+
+  for (let i in os_command_injection_payload_arr) {
+    const os_command_injection_payload = os_command_injection_payload_arr[i];
+
+    try {
+      
+      exec(os_command_injection_payload, async (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error with payload ${os_command_injection_payload}:`, error);
+          return;
+        }
+        
+        await scan.create({
+          scanID: currentScanID,
+          scanType: "OS Command Injection",
+          inputURL: url,
+          scanURL: url, // scanURL might be different based on your scenario
+          scanPayload: os_command_injection_payload,
+        });
+      });
+      
+    } catch (error) {
+      console.error(`Error with payload ${os_command_injection_payload}:`, error);
+      continue;
+    }
+  }
+};
+
+
+
+
 
 
 module.exports = {
     xss_scan,
     xss_scan_success,
     pathtraversal_scan,
+    os_command_injection,
 }

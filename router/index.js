@@ -25,6 +25,8 @@ router.get("/scan_injection_success", scanningController.xss_scan_success)
 
 router.post("/scan_traversal", scanningController.pathtraversal_scan);
 
+router.post("/scan_command", scanningController.os_command_injection);
+
 // router.get("/reflected-xss-success", scanningController.scanning); //url에 세션 아이디 넘겨줘야됨
 
 router.get('/protected', (req, res) => {
