@@ -96,14 +96,6 @@ const xss_scan = async(req, res) => {
   }
 };
 
-<<<<<<< HEAD
-      if (status === 200) {
-        
-          scan.create({
-          scanType: "Path traversal",
-          scanURL: url,
-          scanPayload: scan_payload
-=======
 
 //path traversal 취약점 스캔로직
 const pathtraversal_scan = async(req, res) => {
@@ -131,7 +123,6 @@ const pathtraversal_scan = async(req, res) => {
 
           const response = await new Promise(resolve => {
               http.request(victim_url, resolve).end();
->>>>>>> e719bd1872a227297fa7f419cd4f0d767377fbc5
           });
           const status = response.statusCode;
 
