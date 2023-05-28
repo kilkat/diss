@@ -1,8 +1,18 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 const fs = require('fs');
+const urlLib = require('url');
+
+let visited = {};
 
 const crawl = async (url) => {
+  visited = {}; // Reset the visited object each time you crawl
+  fs.writeFileSync('site_tree.txt', ''); // Clear the site_tree file each time you crawl
+
+  await crawlUrl(url);
+};
+
+const crawlUrl = async (url) => {
   if (visited[url]) {
     return;
   }
@@ -16,13 +26,12 @@ const crawl = async (url) => {
 
     $('a').each((index, element) => {
       let href = $(element).attr('href');
-      if (href.startsWith('/')) {
-        links.push(url + href);
-      }
+      let fullUrl = urlLib.resolve(url, href);
+      links.push(fullUrl);
     });
 
     console.log(`Found ${links.length} links at ${url}`);
-    await Promise.all(links.map(crawl));
+    await Promise.all(links.map(crawlUrl));
     saveUrl(url);
 
   } catch (error) {
@@ -31,10 +40,7 @@ const crawl = async (url) => {
   }
 };
 
-let visited = {};
-// await crawl(url);
-
-function saveUrl(url) {
+const saveUrl = (url) => {
   const urlWithNewLine = url + '\n';
   fs.appendFileSync('site_tree.txt', urlWithNewLine, (err) => {
     if (err) {
