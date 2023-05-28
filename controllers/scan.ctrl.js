@@ -14,20 +14,11 @@ const AsyncLock = require('async-lock');
 const lock = new AsyncLock();
 const router = express.Router();
 const { exec } = require('child_process');
+const { error } = require('console');
 
 
 const xss_payload_arr = fs.readFileSync('xss_payload.txt').toString().split("\n");
 const os_command_injection_payload_arr = fs.readFileSync('os_command_injection_payload.txt').toString().split("\n");
-
-
-let xss_scan_success_data = false
-
-const xss_scan_success = async(req, res) => {
-
-  xss_scan_success_data = true
-
-  return xss_scan_success_data
-}
 
 let scanID = 0;
 
@@ -40,60 +31,70 @@ const getNewScanID = () => {
   });
 };
 
+let xss_scan_success_data = false;
+
+const xss_scan_success = async(req, res) => {
+
+  xss_scan_success_data = true
+
+  return xss_scan_success_data;
+}
+
 //input 태그 찾는 로직 추가해야됨, front: 데이터 넘어가면 result 페이지로 redirect 시켜야됨
-const xss_scan = async(req, res) => {
+const xss_scan = async (req, res) => {
   const currentScanID = await getNewScanID();
 
-  const url = req.body.href;
-
-  const regexp = /=/g;
-
-  await crawl(url);
-
-  const site_tree = fs.readFileSync('site_tree.txt').toString().split("\n");
-
-
-
-  for(let i in site_tree){
-    const match1 = site_tree[i].indexOf("?");
-    const match2 = site_tree[i].indexOf("=");
-    const match3 = site_tree[i].match(regexp);
-    const match4 = site_tree[i].indexOf("&");
-
-    if(match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1){
-      for (let j in xss_payload_arr) {
-        xss_payload = xss_payload_arr[j];
-
-        try {
-          let victim_base_url = site_tree[i].substr(0, match2 + 1)
-          let victim_url = victim_base_url + xss_payload;
-          console.log(victim_url);
-
-          const browser = await puppeteer.launch({headless:'new'});
-          const page = await browser.newPage();
+  const {url, option} = req.body.href;
   
-          if (xss_scan_success_data) {
-            scan.create({
-              scanID: currentScanID,
-              scanType: "Reflected XSS",
-              inputURL: url,
-              scanURL: victim_base_url,
-              scanPayload: xss_payload
-            });
-  
-            xss_scan_success_data = false
-          }
-  
-          await page.setDefaultNavigationTimeout(1);
-          await page.goto(victim_url);
-          await browser.close();
-  
-        } catch (error) {
-          continue;
+
+    const regexp = /=/g;
+
+    try {
+        const result = await crawl(url);
+        for (const url in result) {
+        console.log(url);
+        const match1 = url.indexOf("?");
+        const match2 = url.indexOf("=");
+        const match3 = url.match(regexp);
+        const match4 = url.indexOf("&");
+
+        if (match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1) {
+            for (let j in xss_payload_arr) {
+            const xss_payload = xss_payload_arr[j];
+
+            try {
+                let victim_base_url = url.substr(0, match2 + 1)
+                let victim_url = victim_base_url + xss_payload;
+                console.log(victim_url);
+
+                const browser = await puppeteer.launch({ headless: 'new' });
+                const page = await browser.newPage();
+
+                if (xss_scan_success_data) {
+                    console.log("testsetetset")
+                    scan.create({
+                        scanID: currentScanID,
+                        scanType: "Reflected XSS",
+                        inputURL: url,
+                        scanURL: victim_base_url,
+                        scanPayload: xss_payload
+                    });
+                    xss_scan_success_data = false;
+                }
+
+                await page.setDefaultNavigationTimeout(1);
+                await page.goto(victim_url);
+                await browser.close();
+
+            } catch (error) {
+                continue;
+            }
+            }
         }
+        }
+    } catch (error) {
+        console.error(error);
     }
-    }
-  }
 };
 
 
@@ -187,7 +188,7 @@ const os_command_injection = async (req, res) => {
 
 module.exports = {
     xss_scan,
-    xss_scan_success,
     pathtraversal_scan,
     os_command_injection,
+    xss_scan_success,
 }
