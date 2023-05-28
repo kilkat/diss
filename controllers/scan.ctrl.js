@@ -93,7 +93,7 @@ const pathtraversal_scan = async(req, res) => {
       const status = response.statusCode;
 
       if (status === 200) {
-      
+        
           scan.create({
           scanType: "Path traversal",
           scanURL: url,
