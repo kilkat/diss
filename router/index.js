@@ -24,8 +24,6 @@ router.post("/scan_injection", scanningController.xss_scan);
 
 router.get("/scan_injection_success", scanningController.xss_scan_success)
 
-router.get("/os_command_injection_success", scanningController.os_command_injection_scan_success)
-
 router.post("/scan_traversal", scanningController.pathtraversal_scan);
 
 router.post("/scan_command", scanningController.os_command_injection);
