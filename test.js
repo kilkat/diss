@@ -1,29 +1,22 @@
-const { response } = require('express');
-const request = require('request');
+const fs = require('fs');
 
-async function fast_scan(){
+const site_tree = fs.readFileSync('site_tree.txt').toString().split('\n');
 
-  const payload = "<script>alert('xss test');</script>";
+for (let i in site_tree) {
+  try {
+    let target_url = site_tree[i];
+    const regex = /[?=]/g;
+    const matches = target_url.match(regex);
 
-  const options = {
-    uri: "http://127.0.0.1:3000/xss",
-    qs: {
-      name: payload
+    if (matches) {
+      const positions = [];
+      matches.forEach(match => {
+        const position = target_url.indexOf(match);
+        positions.push(position);
+      });
+      console.log(positions);
     }
-  };
-
-  request(options, function(err, response, body) {
-    if (err) {
-      console.error(err);
-      return;
-    }
-
-    console.log(body);
-    if(body.includes(payload)){
-      console.log('xss!!!')
-    }
-  });
-
+  } catch (error) {
+    continue;
+  }
 }
-
-fast_scan();

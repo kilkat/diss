@@ -61,16 +61,9 @@
   > 프론트 최신 버전 업데이트, result 컨트롤러 만듬(/result_data 페이지에 스캔 결과 DB 데이터 JSON 형태로 보내도록 설정), /result_data get 방식 라우터 설정  
   > 코드 작성자: 장현호  
 
-<br>
+  <br>
 
-- **23/05/28**  
-  /test.js  
-  > test.js에 xss fast scan 모드를 작성함 
-  > 코드 작성자: 김광운  
-
-<br>
-
-- **23/05/29**  
-  /router/index.js, /controllers/scan.ctrl.js, /db_info  
-  > os command injection 테스트를 위한 라우팅 및 로직 수정과 페이로드 수정, db 정보 파일 생성  
+- **23/05/27**  
+  /controllers/scan.ctrl.js, /router/index.js, /crawl_depth.js, /test.js, xss_payload.txt  
+  > 오류 해결을 위해 27일 버전으로 롤백함. fast scan 로직 완료, 테스트를 위해서 xss test 페이로드를 일단 5개만 사용  
   > 코드 작성자: 장현호  
