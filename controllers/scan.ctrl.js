@@ -241,6 +241,7 @@ const os_command_injection = async (req, res) => {
   }
 };
 
+
 module.exports = {
     xss_scan,
     pathtraversal_scan,
