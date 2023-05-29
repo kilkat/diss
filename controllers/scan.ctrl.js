@@ -14,8 +14,6 @@ const path_scan = require('../pathtraversal_scan');
 const AsyncLock = require('async-lock');
 const lock = new AsyncLock();
 const router = express.Router();
-const { exec } = require('child_process');
-const { error } = require('console');
 
 
 const xss_payload_arr = fs.readFileSync('xss_payload.txt').toString().split("\n");
@@ -39,6 +37,15 @@ const xss_scan_success = async(req, res) => {
   xss_scan_success_data = true
 
   return xss_scan_success_data;
+}
+
+let os_command_injection_success_data = false;
+
+const os_command_injection_success = async(req, res) => {
+
+  os_command_injection_success_data = true
+
+  return os_command_injection_success_data;
 }
 
 //input 태그 찾는 로직 추가해야됨, front: 데이터 넘어가면 result 페이지로 redirect 시켜야됨
@@ -201,43 +208,43 @@ const pathtraversal_scan = async(req, res) => {
 
 const os_command_injection = async (req, res) => {
   const currentScanID = await getNewScanID();
-  const url = req.body.href;
+  const href = req.body.href;
+  const result = await crawl(href);
 
-  for (let i in os_command_injection_payload_arr) {
-    const os_command_injection_payload = os_command_injection_payload_arr[i];
+  for (const url in result) {
+    for (let i in os_command_injection_payload_arr) {
+      const os_command_injection_payload = os_command_injection_payload_arr[i];
+  
+      try {
+        let victim_url = url + os_command_injection_payload;
+        
+        await axios.get(victim_url);
+  
+        console.log(victim_url)
 
-    try {
-      
-      exec(os_command_injection_payload, async (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Error with payload ${os_command_injection_payload}:`, error);
-          return;
+        if(os_command_injection_success_data){
+          await scan.create({
+            scanID: currentScanID,
+            scanType: "OS Command Injection",
+            inputURL: href,
+            scanURL: url,
+            scanPayload: os_command_injection_payload,
+
+          });
+          os_command_injection_success_data = false;
         }
         
-        await scan.create({
-          scanID: currentScanID,
-          scanType: "OS Command Injection",
-          inputURL: url,
-          scanURL: url, // scanURL might be different based on your scenario
-          scanPayload: os_command_injection_payload,
-        });
-      });
-      
-    } catch (error) {
-      console.error(`Error with payload ${os_command_injection_payload}:`, error);
-      continue;
+      } catch (error) {
+        continue;
+      }
     }
   }
 };
-
-
-
-
-
 
 module.exports = {
     xss_scan,
     pathtraversal_scan,
     os_command_injection,
     xss_scan_success,
+    os_command_injection_success,
 }

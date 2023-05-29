@@ -67,3 +67,10 @@
   /test.js  
   > test.js에 xss fast scan 모드를 작성함 
   > 코드 작성자: 김광운  
+
+<br>
+
+- **23/05/29**  
+  /router/index.js, /controllers/scan.ctrl.js, /db_info  
+  > os command injection 테스트를 위한 라우팅 및 로직 수정과 페이로드 수정, db 정보 파일 생성  
+  > 코드 작성자: 장현호  
