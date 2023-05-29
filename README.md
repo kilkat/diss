@@ -65,5 +65,5 @@
 
 - **23/05/29**  
   /controllers/scan.ctrl.js, /router/index.js, /crawl_depth.js, /test.js, xss_payload.txt  
-  > 오류 해결을 위해 27일 버전으로 롤백함. fast scan 로직 완료, 테스트를 위해서 xss test 페이로드를 일단 5개만 사용  
+  > xss_success_scan 부분이 계속 false가 찍히는 부분 해결을 위해 5월 27일 버전으로 롤백함. fast scan 로직 완료, 테스트를 위해서 xss test 페이로드를 일단 5개만 사용  
   > 코드 작성자: 장현호  
