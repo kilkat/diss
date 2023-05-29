@@ -36,9 +36,18 @@ let xss_scan_success_data = false;
 
 const xss_scan_success = async(req, res) => {
 
-  xss_scan_success_data = true
+  xss_scan_success_data = true;
 
   return xss_scan_success_data;
+}
+
+
+let os_command_injection_scan_success_data = false;
+
+const os_command_injection_scan_success = async(req, res) => {
+  os_command_injection_scan_success_data = true;
+
+  return os_command_injection_scan_success;
 }
 
 //input 태그 찾는 로직 추가해야됨, front: 데이터 넘어가면 result 페이지로 redirect 시켜야됨
@@ -209,18 +218,15 @@ const os_command_injection = async (req, res) => {
     try {
       
       exec(os_command_injection_payload, async (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Error with payload ${os_command_injection_payload}:`, error);
-          return;
+        if (os_command_injection_scan_success) {
+          await scan.create({
+            scanID: currentScanID,
+            scanType: "OS Command Injection",
+            inputURL: url,
+            scanURL: url,
+            scanPayload: os_command_injection_payload,
+          });
         }
-        
-        await scan.create({
-          scanID: currentScanID,
-          scanType: "OS Command Injection",
-          inputURL: url,
-          scanURL: url, // scanURL might be different based on your scenario
-          scanPayload: os_command_injection_payload,
-        });
       });
       
     } catch (error) {
@@ -240,4 +246,5 @@ module.exports = {
     pathtraversal_scan,
     os_command_injection,
     xss_scan_success,
+    os_command_injection_scan_success,
 }

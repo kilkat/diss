@@ -50,14 +50,14 @@
 <br>
 
 - **23/05/23**  
-  /router/index.js, /controllers/scan.ctrl.js, os_command_inecjtion_payload.txt, xss_payload.txt, build  
+  /router/index.js, /controllers/scan.ctrl.js, /os_command_inecjtion_payload.txt, /xss_payload.txt, build  
   > 라우터에 os command injection 스캔 부분 추가, scan 로직에 os command injection 구현, os_command_inejction_payload.txt 페이로드 작성, xss_paylaod.txt 파일 이름 수정  
   > 코드 작성자: 장현호, ChatGPT4.0  
 
 <br>
 
 - **23/05/27**  
-  /build, controllers/result.ctrl.js, router/index.js  
+  /build, controllers/result.ctrl.js, /router/index.js  
   > 프론트 최신 버전 업데이트, result 컨트롤러 만듬(/result_data 페이지에 스캔 결과 DB 데이터 JSON 형태로 보내도록 설정), /result_data get 방식 라우터 설정  
   > 코드 작성자: 장현호  
 
@@ -67,3 +67,10 @@
   /test.js  
   > test.js에 xss fast scan 모드를 작성함 
   > 코드 작성자: 김광운  
+
+  <br>
+
+- **23/05/29**  
+  router/index.js, /controllers/scan.ctrl.js, /os_command_injection_payload.txt  
+  > os_command_injection 성공 확인을 위한 페이지 라우팅 및 백엔드 로직, 페이로드 완성  
+  > 코드 작성자: 장현호  
