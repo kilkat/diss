@@ -63,7 +63,7 @@
 
   <br>
 
-- **23/05/27**  
+- **23/05/29**  
   /controllers/scan.ctrl.js, /router/index.js, /crawl_depth.js, /test.js, xss_payload.txt  
   > 오류 해결을 위해 27일 버전으로 롤백함. fast scan 로직 완료, 테스트를 위해서 xss test 페이로드를 일단 5개만 사용  
   > 코드 작성자: 장현호  
