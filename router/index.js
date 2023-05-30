@@ -12,9 +12,9 @@ const registerController = require("../controllers/register.ctrl");
 const resultController = require("../controllers/result.ctrl");
 
 
-// router.get("*", function (req,res) {
-//   res.sendFile(path.join(__dirname, '/../build/index.html'))
-// })
+router.get("*", function (req,res) {
+  res.sendFile(path.join(__dirname, '/../build/index.html'))
+})
 
 router.post("/login", loginController.loginUser);
 
@@ -23,6 +23,8 @@ router.post("/register", registerController.createUser);
 router.post("/scan_injection", scanningController.xss_scan);
 
 router.get("/scan_injection_success", scanningController.xss_scan_success)
+
+router.get("/os_command_injection_success", scanningController.os_command_injection_success)
 
 router.post("/scan_traversal", scanningController.pathtraversal_scan);
 
