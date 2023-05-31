@@ -14,24 +14,16 @@ const AsyncLock = require('async-lock');
 const lock = new AsyncLock();
 const router = express.Router();
 const { exec } = require('child_process');
-const request = require('request');
+const request = require('request')
 
 
 const xss_payload_arr = fs.readFileSync('xss_payload.txt').toString().split("\n");
 const os_command_injection_payload_arr = fs.readFileSync('os_command_injection_payload.txt').toString().split("\n");
 
-let os_command_injection_success_data = false;
-
-const os_command_injection_success = (req, res) => {
-  
-  os_command_injection_success_data = true
-  
-  return os_command_injection_success_data
-}
 
 let xss_scan_success_data = false
 
-const xss_scan_success = (req, res) => {
+const xss_scan_success = async(req, res) => {
 
   xss_scan_success_data = true
 
@@ -48,10 +40,6 @@ const getNewScanID = () => {
     });
   });
 };
-
-const fast_scan_xss = async(req, res) => {
-
-}
 
 //input 태그 찾는 로직 추가해야됨, front: 데이터 넘어가면 result 페이지로 redirect 시켜야됨
 const xss_scan = async(req, res) => {
@@ -102,52 +90,49 @@ const xss_scan = async(req, res) => {
       });
     }
   }
-    } else {
-      for(let i in site_tree){
-        const match1 = site_tree[i].indexOf("?");
-        const match2 = site_tree[i].indexOf("=");
-        const match3 = site_tree[i].match(regexp);
-        const match4 = site_tree[i].indexOf("&");
-    
-        if(match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1){
-          for (let j in xss_payload_arr) {
-            xss_payload = xss_payload_arr[j];
-    
-            try {
-              let victim_base_url = site_tree[i].substr(0, match2 + 1)
-              let victim_url = victim_base_url + xss_payload;
-              console.log(victim_url);
-    
-              const browser = await puppeteer.launch({headless:'new'});
-              const page = await browser.newPage();
-      
-              if (xss_scan_success_data) {
-                scan.create({
-                  scanID: currentScanID,
-                  scanType: "Reflected XSS",
-                  inputURL: href,
-                  scanURL: victim_base_url,
-                  scanPayload: xss_payload
-                });
-      
-                xss_scan_success_data = false
-              }
-      
-              await page.setDefaultNavigationTimeout(1);
-              await page.goto(victim_url);
-              await browser.close();
-      
-            } catch (error) {
-              continue;
-            }
+  } else {
+
+  for(let i in site_tree){
+    const match1 = site_tree[i].indexOf("?");
+    const match2 = site_tree[i].indexOf("=");
+    const match3 = site_tree[i].match(regexp);
+    const match4 = site_tree[i].indexOf("&");
+
+    if(match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1){
+      for (let j in xss_payload_arr) {
+        payload = xss_payload_arr[j];
+
+        try {
+          let victim_base_url = site_tree[i].substr(0, match2 + 1)
+          let victim_url = victim_base_url + payload;
+          console.log(victim_url);
+
+          const browser = await puppeteer.launch({headless:'new'});
+          const page = await browser.newPage();
+  
+          if (xss_scan_success_data) {
+            scan.create({
+              scanID: currentScanID,
+              scanType: "Reflected XSS",
+              inputURL: href,
+              scanURL: victim_base_url,
+              scanPayload: payload
+            });
+  
+            xss_scan_success_data = false
+          }
+  
+          await page.setDefaultNavigationTimeout(1);
+          await page.goto(victim_url);
+          await browser.close();
+  
+        } catch (error) {
+          continue;
         }
-        }
-      }
     }
-
-
-
-
+    }
+  }
+}
 };
 
 
@@ -168,6 +153,7 @@ const pathtraversal_scan = async(req, res) => {
     const match2 = site_tree[i].indexOf("=");
     const match3 = site_tree[i].match(regexp);
     const match4 = site_tree[i].indexOf("&");
+
     if(match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1){
       for (let j = 0; j < 10; j++) {
         try {
@@ -178,8 +164,6 @@ const pathtraversal_scan = async(req, res) => {
               http.request(victim_url, resolve).end();
           });
           const status = response.statusCode;
-          console.log(victim_url)
-          console.log(status)
 
           if (status === 200) {
           
@@ -206,64 +190,34 @@ const pathtraversal_scan = async(req, res) => {
 
 const os_command_injection = async (req, res) => {
   const currentScanID = await getNewScanID();
-  const href = req.body.href;
-  const regexp = /=/g;
+  const url = req.body.href;
 
-  try {
-    await crawl(href);
-  } catch (error) {
-    console.error("Error during crawling: ", error);
-    return;
-  }
+  for (let i in os_command_injection_payload_arr) {
+    const os_command_injection_payload = os_command_injection_payload_arr[i];
 
-  const site_tree = fs.readFileSync('site_tree.txt').toString().split("\n");
-
-  for(let i in site_tree){
-    const match1 = site_tree[i].indexOf("?");
-    const match2 = site_tree[i].indexOf("=");
-    const match3 = site_tree[i].match(regexp);
-    const match4 = site_tree[i].indexOf("&");
-    if(match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1){
-      for (let j in os_command_injection_payload_arr) { 
-        const os_command_injection_payload = os_command_injection_payload_arr[j];
-
-        let victim_base_url = site_tree[i].substr(0, match2 + 1)
-        let victim_url = victim_base_url + os_command_injection_payload;
-
-        try {
-          await axios.get(victim_url);
-          
-          console.log(os_command_injection_payload)
-
-          if(os_command_injection_success_data) {
-            try {
-              await scan.create({
-                scanID: currentScanID,
-                scanType: "OS Command Injection",
-                inputURL: href,
-                scanURL: victim_base_url,
-                scanPayload: os_command_injection_payload,
-              });
-            } catch (error) {
-              console.error('Error creating scan of os_command_injection');
-            } 
-          }
-        } catch (error) {
-          console.error('Error in payload loop of os_command_injection');
-          continue;
+    try {
+      
+      exec(os_command_injection_payload, async (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error with payload ${os_command_injection_payload}:`, error);
+          return;
         }
-      }
+        
+        await scan.create({
+          scanID: currentScanID,
+          scanType: "OS Command Injection",
+          inputURL: url,
+          scanURL: url, // scanURL might be different based on your scenario
+          scanPayload: os_command_injection_payload,
+        });
+      });
+      
+    } catch (error) {
+      console.error(`Error with payload ${os_command_injection_payload}:`, error);
+      continue;
     }
   }
 };
-
-
-
-
-
-
-
-
 
 
 
@@ -275,6 +229,4 @@ module.exports = {
     xss_scan_success,
     pathtraversal_scan,
     os_command_injection,
-    fast_scan_xss,
-    os_command_injection_success,
 }

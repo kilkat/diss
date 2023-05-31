@@ -61,16 +61,9 @@
   > 프론트 최신 버전 업데이트, result 컨트롤러 만듬(/result_data 페이지에 스캔 결과 DB 데이터 JSON 형태로 보내도록 설정), /result_data get 방식 라우터 설정  
   > 코드 작성자: 장현호  
 
-<br>
+  <br>
 
-- **23/05/29**  
-  /controllers/scan.ctrl.js, /router/index.js, /crawl_depth.js, /test.js, xss_payload.txt  
-  > xss_success_scan 부분이 계속 false가 찍히는 부분 해결을 위해 5월 27일 버전으로 롤백함. fast scan 로직 완료, 테스트를 위해서 xss test 페이로드를 일단 5개만 사용  
-  > 코드 작성자: 장현호  
-
-<br>
-
-- **23/05/30**  
-  /controllers/scan.ctrl.js, /router.index.js, site_tree.txt  
-  > os_command_injection 로직 작성했지만, 아직 db에 들어가는 부분까지는 미구현  
+- **23/05/31**  
+    
+  > os_command_injection 부분과 accurate_xss 오류로 30일 거에서 27일 거로 다시 롤백해서 fast_xss 구현  
   > 코드 작성자: 장현호  
