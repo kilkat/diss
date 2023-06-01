@@ -30,6 +30,8 @@ const xss_scan_success = async(req, res) => {
   return xss_scan_success_data
 }
 
+os_command_injection_success_data = false
+
 let scanID = 0;
 
 const getNewScanID = () => {
@@ -190,34 +192,61 @@ const pathtraversal_scan = async(req, res) => {
 
 const os_command_injection = async (req, res) => {
   const currentScanID = await getNewScanID();
-  const url = req.body.href;
+  const href = req.body.href;
+  const regexp = /=/g;
 
-  for (let i in os_command_injection_payload_arr) {
-    const os_command_injection_payload = os_command_injection_payload_arr[i];
+  await crawl(href);
 
-    try {
-      
-      exec(os_command_injection_payload, async (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Error with payload ${os_command_injection_payload}:`, error);
-          return;
+  const site_tree = fs.readFileSync('site_tree.txt').toString().split("\n");
+
+  for(let i in site_tree){
+    const match1 = site_tree[i].indexOf("?");
+    const match2 = site_tree[i].indexOf("=");
+    const match3 = site_tree[i].match(regexp);
+    const match4 = site_tree[i].indexOf("&");
+    if(match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1){
+      for (let j in os_command_injection_payload_arr) { 
+        const os_command_injection_payload = os_command_injection_payload_arr[j];
+
+        let victim_base_url = site_tree[i].substr(0, match2 + 1)
+        let victim_url = victim_base_url + os_command_injection_payload;
+
+        try {
+          const response = await axios.get(victim_url);
+
+          if(response.data.includes("root:x:0:0:root:/root:/bin/bash")) {
+            os_command_injection_success_data = true;
+          }
+          
+          console.log(os_command_injection_payload)
+          console.log(os_command_injection_success_data)
+          console.log(victim_base_url)
+
+          if(os_command_injection_success_data) {
+            try {
+              await scan.create({
+                scanID: currentScanID,
+                scanType: "OS Command Injection",
+                inputURL: href,
+                scanURL: victim_base_url,
+                scanPayload: os_command_injection_payload,
+              });
+
+              os_command_injection_success_data = false;
+            } catch (error) {
+              console.error('Error creating scan of os_command_injection');
+              continue;
+            }
+          }
+        } catch (error) {
+          console.error('Error in payload loop of os_command_injection:', error.message);
+          continue;
         }
-        
-        await scan.create({
-          scanID: currentScanID,
-          scanType: "OS Command Injection",
-          inputURL: url,
-          scanURL: url, // scanURL might be different based on your scenario
-          scanPayload: os_command_injection_payload,
-        });
-      });
-      
-    } catch (error) {
-      console.error(`Error with payload ${os_command_injection_payload}:`, error);
-      continue;
+      }
     }
   }
 };
+
 
 
 

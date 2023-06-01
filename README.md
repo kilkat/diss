@@ -61,9 +61,17 @@
   > 프론트 최신 버전 업데이트, result 컨트롤러 만듬(/result_data 페이지에 스캔 결과 DB 데이터 JSON 형태로 보내도록 설정), /result_data get 방식 라우터 설정  
   > 코드 작성자: 장현호  
 
-  <br>
+<br>
 
 - **23/05/31**  
     
   > os_command_injection 부분과 accurate_xss 오류로 30일 거에서 27일 거로 다시 롤백해서 fast_xss 구현  
+  > 코드 작성자: 장현호  
+
+
+<br>
+
+- **23/05/31**  
+  /scan.ctrl.js, os_command_injection_payload  
+  > 기존의 os_command_injection 로직 오류 해결, os command injection 스캔 정상 작동  
   > 코드 작성자: 장현호  
