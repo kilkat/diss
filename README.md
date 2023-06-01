@@ -68,10 +68,16 @@
   > os_command_injection 부분과 accurate_xss 오류로 30일 거에서 27일 거로 다시 롤백해서 fast_xss 구현  
   > 코드 작성자: 장현호  
 
-
 <br>
 
 - **23/05/31**  
   /scan.ctrl.js, os_command_injection_payload  
   > 기존의 os_command_injection 로직 오류 해결, os command injection 스캔 정상 작동  
+  > 코드 작성자: 장현호  
+
+<br>
+
+- **23/05/31**  
+  /controllers/scan.ctrl.js, /models/scan.js, os_command_injection_paylaod.txt
+  > DB에 osInfo 추가, path traversal과 os command injection 스캔 시, windows와 linux 서버 구분
   > 코드 작성자: 장현호  

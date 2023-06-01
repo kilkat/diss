@@ -41,6 +41,12 @@ module.exports = class scan extends Sequelize.Model {
             required: true,
             unique: false,
         },
+        osInfo: {
+          type:Sequelize.STRING(100),
+          allowNull: true,
+          required: false,
+          unique: false,
+      },
         scanPayload: {
         type:Sequelize.STRING(1000),
         allowNull: false,
