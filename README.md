@@ -79,5 +79,5 @@
 
 - **23/05/31**  
   /controllers/scan.ctrl.js, /models/scan.js, os_command_injection_paylaod.txt
-  > DB에 osInfo 추가, path traversal과 os command injection 스캔 시, windows와 linux 서버 구분
+  > DB에 osInfo 추가, path traversal과 os command injection 스캔 시, windows와 linux 서버 구분  
   > 코드 작성자: 장현호  
