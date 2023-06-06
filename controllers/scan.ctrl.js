@@ -26,6 +26,7 @@ let xss_scan_success_data = false
 const xss_scan_success = async(req, res) => {
 
   xss_scan_success_data = true
+  res.sendStatus(200);
 
   return xss_scan_success_data
 }
@@ -35,11 +36,9 @@ os_command_injection_success_data = false
 let scanID = 0;
 
 const getNewScanID = () => {
-  return new Promise((resolve, reject) => {
-    lock.acquire('scanID', () => {
-      scanID++;
-      resolve(scanID);
-    });
+  return lock.acquire('scanID', () => {
+    scanID++;
+    return scanID; // Make sure to return the scanID from within the acquire function
   });
 };
 

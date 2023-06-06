@@ -81,3 +81,10 @@
   /controllers/scan.ctrl.js, /models/scan.js, os_command_injection_paylaod.txt
   > DB에 osInfo 추가, path traversal과 os command injection 스캔 시, windows와 linux 서버 구분
   > 코드 작성자: 장현호  
+
+<br>
+
+- **23/06/06**  
+  /build, /controllers/scan.ctrl.js, /router/index.js  
+  > 프론트 최신 버전으로 업데이트, scanID 오류 해결, 라우팅 오류 해결  
+  > 코드 작성자: 장현호  

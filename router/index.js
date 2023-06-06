@@ -11,11 +11,6 @@ const loginController = require("../controllers/login.ctrl");
 const registerController = require("../controllers/register.ctrl");
 const resultController = require("../controllers/result.ctrl");
 
-
-// router.get("*", function (req,res) {
-//   res.sendFile(path.join(__dirname, '/../build/index.html'))
-// })
-
 router.post("/login", loginController.loginUser);
 
 router.post("/register", registerController.createUser);
@@ -57,5 +52,8 @@ router.get('/protected', (req, res) => {
 
 // router.post("/site-scaning", controller.site-scaning);
 
+router.get("*", function (req,res) {
+  res.sendFile(path.join(__dirname, '/../build/index.html'))
+})
 
 module.exports = router;
