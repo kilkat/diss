@@ -12,15 +12,17 @@ var db = mysql.createConnection({
   });
   db.connect();
 
-const scanResult = async(req ,res) => {
-    db.query('SELECT * FROM scan', function(err, result){
+  const scanResult = async(req ,res) => {
+    let scanId = req.params.scanId;
+    db.query('SELECT * FROM scan WHERE scanId = ?', [scanId], function(err, result){
         var dataList = [];
         for (var diss of result){
             dataList.push(diss)
         };
-    })
-    return;
+        res.json(dataList);
+    });
 }
+
 
 
 module.exports = {

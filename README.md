@@ -88,3 +88,10 @@
   /build, /controllers/scan.ctrl.js, /router/index.js  
   > 프론트 최신 버전으로 업데이트, scanID 오류 해결, 라우팅 오류 해결  
   > 코드 작성자: 장현호  
+
+<br>
+
+- **23/06/07**  
+  /build, /controllers/result.ctrl.js, /router/index.js  
+  > 프론트 최신 버전으로 업데이트, result 페이지에 DB 데이터 보여주도록 하기 위해서 req.params 형태로 scanId 보내도록 백엔드 수정  
+  > 코드 작성자: 장현호  
