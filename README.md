@@ -98,7 +98,7 @@
 
 <br>
 
-- **23/06/07**  
+- **23/06/11**  
   /build, /controllers/scan.ctrl.js, app.js
   > 프론트 최신 버전으로 업데이트, scanType에 Accurate Scan 명시, process.setMaxListeners()을 15에서 1000으로 늘림
   > 코드 작성자: 장현호  
