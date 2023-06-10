@@ -95,3 +95,10 @@
   /build, /controllers/result.ctrl.js, /router/index.js  
   > 프론트 최신 버전으로 업데이트, result 페이지에 DB 데이터 보여주도록 하기 위해서 req.params 형태로 scanId 보내도록 백엔드 수정  
   > 코드 작성자: 장현호  
+
+<br>
+
+- **23/06/07**  
+  /build, /controllers/scan.ctrl.js, app.js
+  > 프론트 최신 버전으로 업데이트, scanType에 Accurate Scan 명시, process.setMaxListeners()을 15에서 1000으로 늘림
+  > 코드 작성자: 장현호  

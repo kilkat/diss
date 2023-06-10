@@ -123,7 +123,7 @@ const xss_scan = async(req, res) => {
           if (xss_scan_success_data) {
             scan.create({
               scanID: currentScanID,
-              scanType: "Reflected XSS",
+              scanType: "Accurate Scan Reflected XSS",
               inputURL: href,
               scanURL: victim_base_url,
               scanPayload: payload
