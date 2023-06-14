@@ -76,7 +76,7 @@ app.use(session({
     name: "session-cookie"
 }));
 
-process.setMaxListeners(15);
+process.setMaxListeners(1000);
 
 app.use("/", router);
 
