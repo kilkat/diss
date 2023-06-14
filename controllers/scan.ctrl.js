@@ -16,6 +16,7 @@ const router = express.Router();
 const { exec } = require('child_process');
 const request = require('request');
 const SocketIO = require('socket.io');
+const { Socket } = require('dgram');
 
 
 const xss_payload_arr = fs.readFileSync('xss_payload.txt').toString().split("\n");
@@ -27,7 +28,6 @@ let xss_scan_success_data = false
 const xss_scan_success = async(req, res) => {
 
   xss_scan_success_data = true
-  res.sendStatus(200);
 
   return xss_scan_success_data
 }
@@ -37,14 +37,19 @@ os_command_injection_success_data = false
 let scanID = 0;
 
 const getNewScanID = () => {
-  return lock.acquire('scanID', () => {
-    scanID++;
-    return scanID; // Make sure to return the scanID from within the acquire function
+  return new Promise((resolve, reject) => {
+    lock.acquire('scanID', () => {
+      scanID++;
+      resolve(scanID);
+    });
   });
 };
 
 //input 태그 찾는 로직 추가해야됨, front: 데이터 넘어가면 result 페이지로 redirect 시켜야됨
 const xss_scan = async(req, res) => {
+
+  
+
   const currentScanID = await getNewScanID();
 
   const {href, option} = req.body;
@@ -124,7 +129,7 @@ const xss_scan = async(req, res) => {
           if (xss_scan_success_data) {
             scan.create({
               scanID: currentScanID,
-              scanType: "Accurate Scan Reflected XSS",
+              scanType: "Reflected XSS",
               inputURL: href,
               scanURL: victim_base_url,
               scanPayload: payload
