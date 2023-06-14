@@ -78,6 +78,13 @@
 <br>
 
 - **23/05/31**  
-  /controllers/scan.ctrl.js, /models/scan.js, os_command_injection_paylaod.txt
-  > DB에 osInfo 추가, path traversal과 os command injection 스캔 시, windows와 linux 서버 구분
+  /controllers/scan.ctrl.js, /models/scan.js, os_command_injection_paylaod.txt  
+  > DB에 osInfo 추가, path traversal과 os command injection 스캔 시, windows와 linux 서버 구분  
   > 코드 작성자: 장현호  
+
+<br>
+
+- **23/06/14**  
+  /app.js  
+  > socket.io 부분 추가  
+  > 코드 작성자: 김광운  

@@ -14,7 +14,8 @@ const AsyncLock = require('async-lock');
 const lock = new AsyncLock();
 const router = express.Router();
 const { exec } = require('child_process');
-const request = require('request')
+const request = require('request');
+const SocketIO = require('socket.io');
 
 
 const xss_payload_arr = fs.readFileSync('xss_payload.txt').toString().split("\n");

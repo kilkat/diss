@@ -5,14 +5,41 @@ const session = require("express-session");
 const dotenv = require("dotenv");
 const path = require("path");
 const cors = require('cors');
+const SocketIO = require('socket.io');
+const http = require('http');
 
 const { sequelize } = require("./models");
 
 dotenv.config();
 
 const app = express();
+const server = http.createServer(app);
 
 app.set("port", process.env.PORT | 80);
+
+// const useSocket = (http) => {
+//     const io = new SocketIO.Server(http, {
+//       cors: {
+//         origin: 'http://localhost:80',
+//       },
+//     });
+  
+//     io.on('connection', (socket) => {
+//       console.log(`⚡: ${socket.id} user just connected!`);
+  
+//       socket.on('clientMessage', (message) => {
+//         // console.log(`Received message from client: ${message} | ${typeof message}`);
+//         console.log(message);
+//         // setColorFromSocketRecieved(message);
+//       });
+  
+//       socket.on('disconnect', () => {
+//         console.log('🔥: A user disconnected');
+//       });
+//     });
+// };
+
+useSocket(server);
 
 // Router
 const router = require("./router");
