@@ -62,7 +62,7 @@ const xss_scan = async(req, res) => {
 
   if(option == "fast"){
       
-    for(const i in site_tree){
+    for(let i in site_tree){
       const match1 = site_tree[i].indexOf("?");
       const match2 = site_tree[i].indexOf("=");
       const match3 = site_tree[i].match(regexp);
@@ -70,11 +70,9 @@ const xss_scan = async(req, res) => {
 
       if (match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1) {
         for (let j in xss_payload_arr) {
+          payload = xss_payload_arr[j];
 
           try{
-
-            payload = xss_payload_arr[j];
-
             let victim_base_url = site_tree[i].substr(0, match2 + 1);
             let victim_url = victim_base_url + payload;
             console.log(victim_url);
@@ -91,9 +89,9 @@ const xss_scan = async(req, res) => {
 
               headers = response.headers
 
-              for (const field in headers) {
-                console.log(`${field}: ${headers[field]}`);
-              }
+              // for (const field in headers) {
+              //   console.log(`${field}: ${headers[field]}`);
+              // }
 
               // console.log(response_header[0].indexOf(':'))
 
