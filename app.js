@@ -39,7 +39,7 @@ app.set("port", process.env.PORT | 80);
 //     });
 // };
 
-// useSocket(server);
+useSocket(server);
 
 // Router
 const router = require("./router");

@@ -6,8 +6,8 @@ const urlLib = require('url');
 let visited = {};
 
 const crawl = async (url) => {
-  visited = {};
-  fs.writeFileSync('site_tree.txt', '');
+  visited = {}; // Reset the visited object each time you crawl
+  fs.writeFileSync('site_tree.txt', ''); // Clear the site_tree file each time you crawl
 
   await crawlUrl(url);
 };

@@ -31,7 +31,7 @@ const loginUser = async(req, res, next) => {
         
         const exUser = await user.findOne({where: {email: email}});
 
-        console.log(exUser);
+        console.log(exUser.name);
 
         if(!exUser) {
             console.log("login fail");
