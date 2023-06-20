@@ -61,7 +61,6 @@ const xss_scan = async(req, res) => {
   const site_tree = fs.readFileSync('site_tree.txt').toString().split("\n");
 
   if(option == "fast"){
-    const payload = "<script>alert('xss test');</script>";
       
     for(const i in site_tree){
       const match1 = site_tree[i].indexOf("?");
@@ -70,40 +69,44 @@ const xss_scan = async(req, res) => {
       const match4 = site_tree[i].indexOf("&");
 
       if (match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1) {
+        for (let j in xss_payload_arr) {
 
-        let victim_base_url = site_tree[i].substr(0, match2 + 1);
-        let victim_url = victim_base_url + payload;
-        console.log(victim_url);
+          const payload = xss_payload_arr[j];
 
-        const options = {
-          uri: victim_url,
-        };
-  
-        request(options, function(err, response, body) {
-          if (err) {
-            console.error(err);
-            return;
+          let victim_base_url = site_tree[i].substr(0, match2 + 1);
+          let victim_url = victim_base_url + payload;
+          console.log(victim_url);
+
+          const options = {
+            uri: victim_url,
+          };
+    
+          request(options, function(err, response, body) {
+            if (err) {
+              console.error(err);
+              return;
+            }
+
+            headers = response.headers
+
+            for (const field in headers) {
+              console.log(`${field}: ${headers[field]}`);
+            }
+
+            // console.log(response_header[0].indexOf(':'))
+
+
+          if(body.includes(payload)){
+            scan.create({
+              scanID: currentScanID,
+              scanType: "Fast Scan Reflected XSS",
+              inputURL: href,
+              scanURL: victim_base_url,
+              scanPayload: payload
+          });
           }
-
-          headers = response.headers
-
-          for (const field in headers) {
-            console.log(`${field}: ${headers[field]}`);
-          }
-
-          // console.log(response_header[0].indexOf(':'))
-
-
-        if(body.includes(payload)){
-          scan.create({
-            scanID: currentScanID,
-            scanType: "Fast Scan Reflected XSS",
-            inputURL: href,
-            scanURL: victim_base_url,
-            scanPayload: payload
         });
-        }
-      });
+      }
     }
   }
   } else {
