@@ -1,0 +1,14 @@
+cat /etc/passwd
+;cat /etc/passwd
+;;cat /etc/passwd
+;cat /etc/passwd;
+&cat /etc/passwd
+&&cat /etc/passwd
+`cat /etc/passwd`
+dir
+&dir
+&&dir
+;dir
+;;dir
+;dir;
+`dir`

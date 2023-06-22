@@ -1,0 +1,115 @@
+#### API 목록 ###
+
+GET /index
+
+GET /register
+
+GET /login
+
+GET /scan
+
+GET /result
+
+POST /register
+
+POST /login
+
+### API 상세정보 ###
+
+GET /index
+{
+  200 OK
+  {
+    "rel":"self",
+    "href":"http://localhost:80/index",
+    "method":"GET",
+    "types":["test/xml","application/json"]
+  }
+}
+
+GET /register
+{
+  200 OK
+  {
+    "rel":"self",
+    "href":"http://localhost:80/register",
+    "method":"GET",
+    "types":["test/xml","application/json"]
+  }
+}
+
+GET /login
+{
+  200 OK
+  {
+    "rel":"self",
+    "href":"http://localhost:80/login",
+    "method":"GET",
+    "types":["test/xml","application/json"]
+  }
+}
+
+GET /scan
+{
+  200 OK
+  {
+    "rel":"self",
+    "href":"http://localhost:80/scan",
+    "method":"GET",
+    "types":["test/xml","application/json"]
+  }
+}
+
+GET /result
+{
+  200 OK
+  {
+    "rel":"self",
+    "href":"http://localhost:80/result",
+    "method":"GET",
+    "types":["test/xml","application/json"]
+  }
+}
+
+POST /register
+{
+  "Content-Type":"application/json",
+  "email":"example@gmail.com",
+  "name":"example",
+  "password":"example123!",
+  "re_password":"example123!",
+  
+  201 Created
+  {
+    "email":"example@gmail.com",
+    "name":"example",
+    "password":"example123!",
+    "re_password":"example123!",
+    "links":[
+    {
+      "rel":"self",
+      "href":"http://localhost:80/index",
+      "method":"GET",
+      "types":["test/xml","application/json"]
+    }]
+  }
+}
+
+POST /login
+{
+  "Content-Type":"application/json",
+  "username":"abcd", "password":"abcd"
+
+  201 Created
+  {
+    "email":"abcd@gmail.com",
+    "password":"example123!",
+    "links":[
+    {
+      "rel":"self",
+      "href":"http://localhost:80/index",
+      "method":"GET",
+      "types":["test/xml","application/json"]
+    }]
+  }
+}

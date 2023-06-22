@@ -1,0 +1,7 @@
+http://192.168.222.128:3000/xss?name=
+http://192.168.222.128:3000/xss
+http://192.168.222.128:3000/os_command_injection/result?command=
+http://192.168.222.128:3000/os_command_injection
+http://192.168.222.128:3000/path_traversal/download?file=
+http://192.168.222.128:3000/path_traversal
+http://192.168.222.128:3000
