@@ -8,25 +8,25 @@ Website Vulnerability Scanning Site(XSS, Sql Injection, Path tarversal, OS Comma
 4. 스캐닝이 끝나면 결과창이 나옴
 
 # Images
-1. site_depth_flow
+1. site_depth_flow  
 ![대체 텍스트](./how-to-use/images/depth_flow.png)
-2. xss_scaning_page
+2. xss_scaning_page  
 ![대체 텍스트](./how-to-use/images/xss.png)
-3. xss_result_page
+3. xss_result_page  
 ![대체 텍스트](./how-to-use/images/xss_res.png)
-4. xss_fast_flow
+4. xss_fast_flow  
 ![대체 텍스트](./how-to-use/images/xss_flow_fast.png)
-5. xss_accurate_flow
+5. xss_accurate_flow  
 ![대체 텍스트](./how-to-use/images/xss_flow_acc.png)
-6. pathtraversal_page
+6. pathtraversal_page  
 ![대체 텍스트](./how-to-use/images/pathtrav.png)
-7. pathtraversal_result_page
+7. pathtraversal_result_page  
 ![대체 텍스트](./how-to-use/images/pathtrav_res.png)
-8. pathtraversal_flow
+8. pathtraversal_flow  
 ![대체 텍스트](./how-to-use/images/path_flow.png)
-9. os_command_injection_page
+9. os_command_injection_page  
 ![대체 텍스트](./how-to-use/images/oscmnd.png)
-10. os_command_injection_result_page
+10. os_command_injection_result_page  
 ![대체 텍스트](./how-to-use/images/os_cmnd_res.png)
-11. os_command_injection_flow
+11. os_command_injection_flow  
 ![대체 텍스트](./how-to-use/images/os_cmnd_flow.png)
