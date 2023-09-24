@@ -17,6 +17,8 @@ const { exec } = require('child_process');
 const request = require('request');
 const SocketIO = require('socket.io');
 const { Socket } = require('dgram');
+const urlModule = require('url');
+
 
 
 const xss_payload_arr = fs.readFileSync('xss_payload.txt').toString().split("\n");
@@ -45,109 +47,246 @@ const getNewScanID = () => {
   });
 };
 
+// Stored XSS - URL 목록에서 write로 끝나는 URL을 추출하는 함수
+const getExactWriteEndingUrls = (urlList) => {
+  return urlList.filter(url => {
+    try {
+      const path = new URL(url).pathname; 
+      const segments = path.split('/');
+      const lastSegment = segments[segments.length - 1];
+      return lastSegment === 'write';
+    } catch (e) {
+      return false; 
+    }
+  });
+}
+
+const stored_xss_fast_scan_payload = "<script>alert('xss test');</script>";
+
+// Stored XSS - URL의 Form 태그에서 name 속성값 찾기
+const findFormTagsForStoredXssFastScan = async (url,href) => {
+  try {
+      const response = await axios.get(url);
+      const $ = cheerio.load(response.data);
+      
+      const forms = [];
+      $('form').each((index, element) => {
+          const action = $(element).attr('action');
+          const method = $(element).attr('method') || 'get';
+          
+          const formData = {};
+          $(element).find('input[name], textarea[name]').each((i, inputElement) => {
+              const inputName = $(inputElement).attr('name');
+              formData[inputName] = stored_xss_fast_scan_payload;
+          });
+
+          forms.push({
+              url: `${href}${action}`,
+              method,
+              data: formData
+          });
+      });
+
+      return forms;
+  } catch (error) {
+      console.error(`Failed to fetch and parse URL ${url}: ${error.message}`);
+      return [];
+  }
+};
+
+const submitPostForStoredXssFastScan = async (form) => {
+  try {
+    let redirectUrl = null;
+    if (form.method.toLowerCase() === 'post') {
+        const response = await axios.post(form.url, form.data);
+
+        redirectUrl = response.request.res.responseUrl;
+    }
+
+    console.log(redirectUrl)
+
+    return redirectUrl;
+
+} catch (error) {
+    console.error(`Failed to submit to URL ${form.url}: ${error.message}`);
+    return null;
+}
+};
+
+const checkAlertTriggeredInBrowser = async (url, expectedAlertMessage) => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+
+  // 'alert' 이벤트 리스너를 추가합니다.
+  let isAlertTriggered = false;
+  page.on('dialog', async (dialog) => {
+      if (dialog.message() === expectedAlertMessage) {
+          isAlertTriggered = true;
+      }
+      await dialog.dismiss();
+  });
+
+  await page.goto(url, { waitUntil: 'domcontentloaded' });
+  await browser.close();
+
+  return isAlertTriggered;
+};
+
+const processStoredXssFastScan = async (url, href) => {
+  let redirectUrl = null;
+  let triggeredUrl = null;  // XSS가 트리거된 URL
+
+  const forms = await findFormTagsForStoredXssFastScan(url, href);
+  for (const form of forms) {
+      redirectUrl = await submitPostForStoredXssFastScan(form); 
+      
+      if (redirectUrl) {
+          const fullRedirectUrl = urlModule.resolve(href, redirectUrl);
+          const isXssTriggered = await checkAlertTriggeredInBrowser(fullRedirectUrl, "xss test");
+
+          if (isXssTriggered) {
+              triggeredUrl = fullRedirectUrl;  // URL 저장
+              break;  // URL을 찾았으므로 반복 종료
+          }
+      }
+  }
+
+  return triggeredUrl;  // XSS가 트리거된 URL 반환
+};
+
+
+
+
+
 //input 태그 찾는 로직 추가해야됨, front: 데이터 넘어가면 result 페이지로 redirect 시켜야됨
 const xss_scan = async(req, res) => {
-
-  
-
   const currentScanID = await getNewScanID();
-
-  const {href, option} = req.body;
 
   const regexp = /=/g;
 
+  const href = req.body.href;
+  const type = req.body.type;
+  const option = req.body.option;
   await crawl(href);
 
   const site_tree = fs.readFileSync('site_tree.txt').toString().split("\n");
 
-  if(option == "fast"){
-    const payload = "<script>alert('xss test');</script>";
-      
-    for(const i in site_tree){
+  if(type == "reflected"){
+    if(option == "fast"){
+      const payload = "<script>alert('xss test');</script>";
+        
+      for(const i in site_tree){
+        const match1 = site_tree[i].indexOf("?");
+        const match2 = site_tree[i].indexOf("=");
+        const match3 = site_tree[i].match(regexp);
+        const match4 = site_tree[i].indexOf("&");
+
+        if (match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1) {
+
+          let victim_base_url = site_tree[i].substr(0, match2 + 1);
+          let victim_url = victim_base_url + payload;
+          console.log(victim_url);
+
+          const options = {
+            uri: victim_url,
+          };
+    
+          request(options, function(err, response, body) {
+            if (err) {
+              console.error(err);
+              return;
+            }
+
+            headers = response.headers
+
+            for (const field in headers) {
+              console.log(`${field}: ${headers[field]}`);
+            }
+
+            // console.log(response_header[0].indexOf(':'))
+
+
+          if(body.includes(payload)){
+            scan.create({
+              scanID: currentScanID,
+              scanType: "Fast Scan Reflected XSS",
+              inputURL: href,
+              scanURL: victim_base_url,
+              scanPayload: payload
+          });
+          }
+        });
+      }
+    }
+    } else if(option == "accurate"){
+
+    for(let i in site_tree){
       const match1 = site_tree[i].indexOf("?");
       const match2 = site_tree[i].indexOf("=");
       const match3 = site_tree[i].match(regexp);
       const match4 = site_tree[i].indexOf("&");
 
-      if (match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1) {
+      if(match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1){
+        for (let j in xss_payload_arr) {
+          payload = xss_payload_arr[j];
 
-        let victim_base_url = site_tree[i].substr(0, match2 + 1);
-        let victim_url = victim_base_url + payload;
-        console.log(victim_url);
+          try {
+            let victim_base_url = site_tree[i].substr(0, match2 + 1)
+            let victim_url = victim_base_url + payload;
+            console.log(victim_url);
 
-        const options = {
-          uri: victim_url,
+            const browser = await puppeteer.launch({headless:'new'});
+            const page = await browser.newPage();
+    
+            if (xss_scan_success_data) {
+              scan.create({
+                scanID: currentScanID,
+                scanType: "Reflected XSS",
+                inputURL: href,
+                scanURL: victim_base_url,
+                scanPayload: payload
+              });
+    
+              xss_scan_success_data = false
+            }
+    
+            await page.setDefaultNavigationTimeout(1);
+            await page.goto(victim_url);
+            await browser.close();
+    
+          } catch (error) {
+            continue;
+          }
+      }
+      }
+    }
+  } 
+
+  }
+
+else if(type === "stored") {
+    if(option === "fast") {
+        const payload = {
+            data: "<script>alert('xss test');</script>"
         };
-  
-        request(options, function(err, response, body) {
-          if (err) {
-            console.error(err);
-            return;
-          }
 
-          headers = response.headers
+        const writeUrls = getExactWriteEndingUrls(site_tree);
+        
+        for (const url of writeUrls) {
+            const triggeredUrl = await processStoredXssFastScan(url, href);  // XSS가 트리거된 URL 얻기
 
-          for (const field in headers) {
-            console.log(`${field}: ${headers[field]}`);
-          }
-
-          // console.log(response_header[0].indexOf(':'))
-
-
-        if(body.includes(payload)){
-          scan.create({
-            scanID: currentScanID,
-            scanType: "Fast Scan Reflected XSS",
-            inputURL: href,
-            scanURL: victim_base_url,
-            scanPayload: payload
-        });
-        }
-      });
-    }
-  }
-  } else {
-
-  for(let i in site_tree){
-    const match1 = site_tree[i].indexOf("?");
-    const match2 = site_tree[i].indexOf("=");
-    const match3 = site_tree[i].match(regexp);
-    const match4 = site_tree[i].indexOf("&");
-
-    if(match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1){
-      for (let j in xss_payload_arr) {
-        payload = xss_payload_arr[j];
-
-        try {
-          let victim_base_url = site_tree[i].substr(0, match2 + 1)
-          let victim_url = victim_base_url + payload;
-          console.log(victim_url);
-
-          const browser = await puppeteer.launch({headless:'new'});
-          const page = await browser.newPage();
-  
-          if (xss_scan_success_data) {
-            scan.create({
-              scanID: currentScanID,
-              scanType: "Reflected XSS",
-              inputURL: href,
-              scanURL: victim_base_url,
-              scanPayload: payload
-            });
-  
-            xss_scan_success_data = false
-          }
-  
-          await page.setDefaultNavigationTimeout(1);
-          await page.goto(victim_url);
-          await browser.close();
-  
-        } catch (error) {
-          continue;
+            if (triggeredUrl) {
+                // 여기서 데이터베이스에 결과를 저장합니다.
+                scan.create({
+                    scanID: currentScanID,   // 이 변수의 할당 방식을 확인하세요
+                    scanType: "Stored XSS",
+                    inputURL: href,
+                    scanURL: triggeredUrl,
+                    scanPayload: payload.data
+                });
+            }
         }
     }
-    }
-  }
 }
 };
 
@@ -160,6 +299,10 @@ const pathtraversal_scan = async(req, res) => {
   const path_traversal_payload_arr_linux = "../";
   const path_traversal_payload_arr_windows = "..\\";
   const regexp = /=/g;
+
+  const href = req.body.href;
+  const type = req.body.type;
+  const option = req.body.option;
 
   await crawl(url);
 
@@ -226,8 +369,11 @@ const pathtraversal_scan = async(req, res) => {
 
 const os_command_injection = async (req, res) => {
   const currentScanID = await getNewScanID();
-  const href = req.body.href;
   const regexp = /=/g;
+
+  const href = req.body.href;
+  const type = req.body.type;
+  const option = req.body.option;
 
   await crawl(href);
 
