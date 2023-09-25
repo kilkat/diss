@@ -21,10 +21,12 @@ const urlModule = require('url');
 
 
 
-const xss_payload_arr = fs.readFileSync('xss_payload.txt').toString().split("\n");
-const stored_xss_payload_arr = fs.readFileSync('stored_xss_payload.txt').toString().split("\n");
+const reflected_xss_payload_arr = fs.readFileSync('reflected_xss_payload.txt').toString().split("\n");
+const xss_fast_scan_payload = fs.readFileSync('xss_fast_scan_payload.txt').toString().split("\n");
 const os_command_injection_payload_arr = fs.readFileSync('os_command_injection_payload.txt').toString().split("\n");
+const stored_xss_payload_arr = fs.readFileSync('stored_xss_payload.txt').toString().split("\n");
 
+let scanID = 0;
 
 let xss_scan_success_data = false
 
@@ -35,9 +37,18 @@ const xss_scan_success = async(req, res) => {
   return xss_scan_success_data
 }
 
+let stored_xss_scan_success_data = false
+
+const stored_xss_scan_success = async(req, res) => {
+
+  stored_xss_scan_success_data = true
+
+  return stored_xss_scan_success_data
+}
+
 os_command_injection_success_data = false
 
-let scanID = 0;
+
 
 const getNewScanID = () => {
   return new Promise((resolve, reject) => {
@@ -62,7 +73,6 @@ const getExactWriteEndingUrls = (urlList) => {
   });
 }
 
-// Stored XSS - URL의 Form 태그에서 name 속성값 찾기
 // Stored XSS - URL의 Form 태그에서 name 속성값 찾기
 const findFormTagsForStoredXssFastScan = async (url, href, payload) => {
   try {
@@ -139,7 +149,7 @@ const processStoredXssFastScan = async (url, href) => {
   const forms = await findFormTagsForStoredXssFastScan(url, href);
   
   for (const form of forms) {
-      for (const payload of stored_xss_payload_arr) {
+      for (const payload of xss_fast_scan_payload) {
           form.data = Object.fromEntries(
               Object.entries(form.data).map(([key, value]) => [key, payload])
           );
@@ -160,7 +170,28 @@ const processStoredXssFastScan = async (url, href) => {
 };
 
 
+const processStoredXssAccurateScan = async (url, href, payload) => {
+  const forms = await findFormTagsForStoredXssFastScan(url, href); // 기존에 작성된 함수를 재사용합니다.
+  const triggeredPayloads = [];
+  
+  for (const form of forms) {
+    form.data = Object.fromEntries(
+      Object.entries(form.data).map(([key, value]) => [key, payload])
+    );
 
+    const redirectUrl = await submitPostForStoredXssFastScan(form);
+    
+    if (redirectUrl) {
+      const isAlertTriggered = await checkAlertTriggeredInBrowser(redirectUrl, payload);
+
+      if (isAlertTriggered) {
+        triggeredPayloads.push({ url: redirectUrl, payload });
+      }
+    }
+  }
+
+  return triggeredPayloads;
+};
 
 
 
@@ -236,8 +267,8 @@ const xss_scan = async(req, res) => {
       const match4 = site_tree[i].indexOf("&");
 
       if(match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1){
-        for (let j in xss_payload_arr) {
-          payload = xss_payload_arr[j];
+        for (let j in reflected_xss_payload_arr) {
+          payload = reflected_xss_payload_arr[j];
 
           try {
             let victim_base_url = site_tree[i].substr(0, match2 + 1)
@@ -278,8 +309,6 @@ const xss_scan = async(req, res) => {
         const writeUrls = getExactWriteEndingUrls(site_tree);
         
         for (const url of writeUrls) {
-            console.log("Testing URL: " + url);
-            
             const triggeredPayloads = await processStoredXssFastScan(url, href);
   
             for (const payloadData of triggeredPayloads) {
@@ -294,6 +323,29 @@ const xss_scan = async(req, res) => {
             
             console.log("Test complete for URL: " + url);
         }
+    }
+    else if (option == "accurate") {
+      const writeUrls = getExactWriteEndingUrls(site_tree);
+    
+      for (let i = 0; i < stored_xss_payload_arr.length; i++) {
+        const payload = stored_xss_payload_arr[i];
+    
+        for (const url of writeUrls) {
+          await processStoredXssAccurateScan(url, href, payload);
+          
+          if (stored_xss_scan_success_data) {
+            await scan.create({
+              scanID: currentScanID,
+              scanType: "Stored XSS",
+              inputURL: href,
+              scanURL: url,
+              scanPayload: payload
+            });
+            
+            stored_xss_scan_success_data = false;  // 상태를 다시 초기화
+          }
+        }
+      }
     }
   }
 };
@@ -454,6 +506,7 @@ const os_command_injection = async (req, res) => {
 module.exports = {
     xss_scan,
     xss_scan_success,
+    stored_xss_scan_success,
     pathtraversal_scan,
     os_command_injection,
 }

@@ -17,7 +17,9 @@ router.post("/register", registerController.createUser);
 
 router.post("/scan_injection", scanningController.xss_scan);
 
-router.get("/scan_injection_success", scanningController.xss_scan_success)
+router.post("/scan_reflcted_injection_success", scanningController.xss_scan_success)
+
+router.post("/scan_stored_injection_success", scanningController.stored_xss_scan_success)
 
 router.post("/scan_traversal", scanningController.pathtraversal_scan);
 
