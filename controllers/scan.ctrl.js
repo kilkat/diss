@@ -339,34 +339,78 @@ const xss_scan = async(req, res) => {
         }
     }
     else if (option == "accurate") {
-      const writeUrls = getExactWriteEndingUrls(site_tree);
+      try {
+        const axios = require('axios');
+        const cheerio = require('cheerio');
+        const puppeteer = require('puppeteer');
     
-      for (let i = 0; i < stored_xss_payload_arr.length; i++) {
-        const payload = stored_xss_payload_arr[i];
+        // 1. Get web page source (from findFormTagsForStoredXssFastScan)
+        const response = await axios.get(url);
+        const html = response.data;
     
-        for (const url of writeUrls) {
-          await processStoredXssAccurateScan(url, href, payload);
-          
-          console.log("Test complete for URL: " + url);
-          console.log("Test complete for payload: " + payload);
-          console.log("check insertyed data: " + stored_xss_scan_success_data)
-
+        // 2. Parse the HTML to find all form tags and their input fields (from findFormTagsForStoredXssFastScan)
+        const $ = cheerio.load(html);
+        const forms = [];
+    
+        $('form').each((index, element) => {
+          const action = $(element).attr('action') || url;
+          const method = $(element).attr('method') || 'GET';
+          const inputs = {};
+    
+          // Handle input tags
+          $(element).find('input[name]').each((i, inputElem) => {
+            const inputName = $(inputElem).attr('name');
+            inputs[inputName] = payload;
+          });
+    
+          // Handle textarea tags
+          $(element).find('textarea[name]').each((i, textareaElem) => {
+            const textareaName = $(textareaElem).attr('name');
+            inputs[textareaName] = payload;
+          });
+    
+          forms.push({ action, method, data: inputs });
+        });
+    
+        // 3. Submit each form and get the redirect URL (from submitPostForStoredXssFastScan)
+        for (const form of forms) {
+          const browser = await puppeteer.launch({ 
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox'] 
+          });
+          const page = await browser.newPage();
+          await page.goto(url, { waitUntil: 'networkidle2' });
+    
+          for (const [key, value] of Object.entries(form.data)) {
+            await page.type(`[name="${key}"]`, value);
+          }
+    
+          await Promise.all([
+            page.click(`form[action="${form.action}"] [type="submit"]`),
+            page.waitForNavigation({ waitUntil: 'networkidle2' })
+          ]);
+    
+          const redirectUrl = page.url();
+          await browser.close();
+    
           if (stored_xss_scan_success_data) {
             await scan.create({
               scanID: currentScanID,
               scanType: "Stored XSS",
               inputURL: href,
-              scanURL: url,
+              scanURL: redirectUrl,
               scanPayload: payload
             });
-            
-            stored_xss_scan_success_data = false;  // 상태를 다시 초기화
+            stored_xss_scan_success_data = false;
           }
         }
+      } catch (error) {
+        console.error("Error in accurate scanning:", error);
+        return res.status(500).json({ error: "Internal Server Error during accurate scanning" });
       }
     }
   }
-};
+}
 
 
 //path traversal 취약점 스캔로직
