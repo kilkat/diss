@@ -136,7 +136,7 @@ const checkAlertTriggeredInBrowser = async (url, expectedAlertMessage) => {
       await dialog.dismiss();
   });
 
-  // 네트워크 요청이 완료될 때까지 기다립니다.
+  // Wait for the network requests to complete
   await page.goto(url, { waitUntil: 'networkidle0' });
   await browser.close();
 
@@ -182,16 +182,30 @@ const processStoredXssAccurateScan = async (url, href, payload) => {
     const redirectUrl = await submitPostForStoredXssFastScan(form);
     
     if (redirectUrl) {
-      const isAlertTriggered = await checkAlertTriggeredInBrowser(redirectUrl, payload);
-
-      if (isAlertTriggered) {
-        triggeredPayloads.push({ url: redirectUrl, payload });
+      // Open the redirect URL in a browser using Puppeteer
+      const browser = await puppeteer.launch({ headless: true }); // headless mode (no GUI)
+      const page = await browser.newPage();
+      await page.goto(redirectUrl);
+      await new Promise(resolve => setTimeout(resolve, 1)); // Wait for 5 seconds
+      await browser.close();
+      
+      // Check if stored_xss_scan_success_data is true (indicating the payload was successful)
+      if (stored_xss_scan_success_data) {
+        await scan.create({
+          scanID: currentScanID,  // 이 값은 함수 내에서 미리 정의되거나 전달되어야 합니다.
+          scanType: "Stored XSS",
+          inputURL: href,
+          scanURL: redirectUrl,
+          scanPayload: payload
+        });
+        stored_xss_scan_success_data = false; // 플래그 초기화
       }
     }
   }
 
   return triggeredPayloads;
 };
+
 
 
 
@@ -333,6 +347,10 @@ const xss_scan = async(req, res) => {
         for (const url of writeUrls) {
           await processStoredXssAccurateScan(url, href, payload);
           
+          console.log("Test complete for URL: " + url);
+          console.log("Test complete for payload: " + payload);
+          console.log("check insertyed data: " + stored_xss_scan_success_data)
+
           if (stored_xss_scan_success_data) {
             await scan.create({
               scanID: currentScanID,
