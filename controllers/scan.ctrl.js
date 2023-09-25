@@ -22,6 +22,7 @@ const urlModule = require('url');
 
 
 const xss_payload_arr = fs.readFileSync('xss_payload.txt').toString().split("\n");
+const stored_xss_payload_arr = fs.readFileSync('stored_xss_payload.txt').toString().split("\n");
 const os_command_injection_payload_arr = fs.readFileSync('os_command_injection_payload.txt').toString().split("\n");
 
 
@@ -61,10 +62,9 @@ const getExactWriteEndingUrls = (urlList) => {
   });
 }
 
-const stored_xss_fast_scan_payload = "<script>alert('xss test');</script>";
-
 // Stored XSS - URL의 Form 태그에서 name 속성값 찾기
-const findFormTagsForStoredXssFastScan = async (url,href) => {
+// Stored XSS - URL의 Form 태그에서 name 속성값 찾기
+const findFormTagsForStoredXssFastScan = async (url, href, payload) => {
   try {
       const response = await axios.get(url);
       const $ = cheerio.load(response.data);
@@ -77,7 +77,7 @@ const findFormTagsForStoredXssFastScan = async (url,href) => {
           const formData = {};
           $(element).find('input[name], textarea[name]').each((i, inputElement) => {
               const inputName = $(inputElement).attr('name');
-              formData[inputName] = stored_xss_fast_scan_payload;
+              formData[inputName] = payload;
           });
 
           forms.push({
@@ -93,6 +93,7 @@ const findFormTagsForStoredXssFastScan = async (url,href) => {
       return [];
   }
 };
+
 
 const submitPostForStoredXssFastScan = async (form) => {
   try {
@@ -117,7 +118,6 @@ const checkAlertTriggeredInBrowser = async (url, expectedAlertMessage) => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
-  // 'alert' 이벤트 리스너를 추가합니다.
   let isAlertTriggered = false;
   page.on('dialog', async (dialog) => {
       if (dialog.message() === expectedAlertMessage) {
@@ -126,33 +126,42 @@ const checkAlertTriggeredInBrowser = async (url, expectedAlertMessage) => {
       await dialog.dismiss();
   });
 
-  await page.goto(url, { waitUntil: 'domcontentloaded' });
+  // 네트워크 요청이 완료될 때까지 기다립니다.
+  await page.goto(url, { waitUntil: 'networkidle0' });
   await browser.close();
 
   return isAlertTriggered;
 };
 
+
 const processStoredXssFastScan = async (url, href) => {
-  let redirectUrl = null;
-  let triggeredUrl = null;  // XSS가 트리거된 URL
-
+  const triggeredPayloads = [];
   const forms = await findFormTagsForStoredXssFastScan(url, href);
+  
   for (const form of forms) {
-      redirectUrl = await submitPostForStoredXssFastScan(form); 
-      
-      if (redirectUrl) {
-          const fullRedirectUrl = urlModule.resolve(href, redirectUrl);
-          const isXssTriggered = await checkAlertTriggeredInBrowser(fullRedirectUrl, "xss test");
+      for (const payload of stored_xss_payload_arr) {
+          form.data = Object.fromEntries(
+              Object.entries(form.data).map(([key, value]) => [key, payload])
+          );
+          const redirectUrl = await submitPostForStoredXssFastScan(form); 
 
-          if (isXssTriggered) {
-              triggeredUrl = fullRedirectUrl;  // URL 저장
-              break;  // URL을 찾았으므로 반복 종료
+          if (redirectUrl) {
+              const fullRedirectUrl = urlModule.resolve(href, redirectUrl);
+              const response = await axios.get(fullRedirectUrl);
+
+              if(response.data.includes(payload)) {
+                  triggeredPayloads.push({url: fullRedirectUrl, payload});
+              }
           }
       }
   }
 
-  return triggeredUrl;  // XSS가 트리거된 URL 반환
+  return triggeredPayloads;
 };
+
+
+
+
 
 
 
@@ -264,30 +273,29 @@ const xss_scan = async(req, res) => {
 
   }
 
-else if(type === "stored") {
-    if(option === "fast") {
-        const payload = {
-            data: "<script>alert('xss test');</script>"
-        };
-
+  else if (type === "stored") {
+    if (option === "fast") {
         const writeUrls = getExactWriteEndingUrls(site_tree);
         
         for (const url of writeUrls) {
-            const triggeredUrl = await processStoredXssFastScan(url, href);  // XSS가 트리거된 URL 얻기
-
-            if (triggeredUrl) {
-                // 여기서 데이터베이스에 결과를 저장합니다.
-                scan.create({
-                    scanID: currentScanID,   // 이 변수의 할당 방식을 확인하세요
+            console.log("Testing URL: " + url);
+            
+            const triggeredPayloads = await processStoredXssFastScan(url, href);
+  
+            for (const payloadData of triggeredPayloads) {
+                await scan.create({
+                    scanID: currentScanID,
                     scanType: "Stored XSS",
                     inputURL: href,
-                    scanURL: triggeredUrl,
-                    scanPayload: payload.data
+                    scanURL: payloadData.url,
+                    scanPayload: payloadData.payload
                 });
             }
+            
+            console.log("Test complete for URL: " + url);
         }
     }
-}
+  }
 };
 
 

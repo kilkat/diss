@@ -1,0 +1,4 @@
+<script>alert('xss test');</script>
+<sCrIpT>alert('xss test');</sCrIpT>
+<scrscriptipt>alert('xss test');</scrscriptipt>
+<sCrScRiPtIpT>alert('xss test');</sCrScRiPtIpT>

@@ -1,0 +1,110 @@
+Database : diss
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+Tables
++----------------+
+| Tables_in_diss |
++----------------+
+| scan           |
+| user           |
++----------------+
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+scan tables
++---------------+---------------+------+-----+---------+----------------+
+| Field         | Type          | Null | Key | Default | Extra          |
++---------------+---------------+------+-----+---------+----------------+
+| id            | int           | NO   | PRI | NULL    | auto_increment |
+| scanID        | int           | YES  |     | NULL    |                |
+| scanUserEmail | varchar(40)   | YES  | UNI | NULL    |                |
+| scanType      | varchar(40)   | NO   |     | NULL    |                |
+| inputURL      | varchar(500)  | NO   |     | NULL    |                |
+| scanURL       | varchar(500)  | NO   |     | NULL    |                |
+| scanPayload   | varchar(1000) | NO   |     | NULL    |                |
++---------------+---------------+------+-----+---------+----------------+
+
+{
+    id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+    },
+    scanID: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        required: true,
+        unique: false,
+    },
+    scanUserEmail: {
+        type: Sequelize.STRING(40),
+        allowNull: true,
+        required: true,
+        unique: true,
+    },
+    scanType: {
+        type: Sequelize.STRING(40),
+        allowNull: false,
+        required: true,
+        unique: false,
+    },
+    inputURL: {
+        type:Sequelize.STRING(500),
+        allowNull: false,
+        required: true,
+        unique: false,
+    },
+    scanURL: {
+        type:Sequelize.STRING(500),
+        allowNull: false,
+        required: true,
+        unique: false,
+    },
+    scanPayload: {
+    type:Sequelize.STRING(1000),
+    allowNull: false,
+    required: true,
+    unique: false,
+    },
+},
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+user table
++----------+--------------+------+-----+---------+----------------+
+| Field    | Type         | Null | Key | Default | Extra          |
++----------+--------------+------+-----+---------+----------------+
+| id       | int          | NO   | PRI | NULL    | auto_increment |
+| email    | varchar(40)  | NO   | UNI | 0       |                |
+| name     | varchar(40)  | NO   |     | 0       |                |
+| password | varchar(100) | NO   |     | NULL    |                |
++----------+--------------+------+-----+---------+----------------+
+
+{
+    id: {
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+    },
+    email: {
+        type: Sequelize.STRING(40),
+        allowNull: false,
+        required: true,
+        unique: true,
+        defaultValue: 0,
+    },
+    name: {
+        type: Sequelize.STRING(40),
+        allowNull: false,
+        required: true,
+        unique: false,
+        defaultValue: 0,
+    },
+    password: {
+    type:Sequelize.STRING(100),
+    allowNull: false,
+    required: true,
+    unique: false,
+    },
+},
