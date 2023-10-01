@@ -2,10 +2,10 @@ const { Router } = require("express");
 const mysql = require("mysql2");
 const bcrypt = require('bcrypt');
 const user = require("../models/users");
-const emailExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i; //email regExp
-const passwordExp =  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{1,100}$/; //password regExp
-const alphabetExp = /^[a-zA-Z]*$/; //alphabet regExp
-const spaceExp = /\s/g; //space regExp
+const emailExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+const passwordExp =  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{1,100}$/;
+const alphabetExp = /^[a-zA-Z]*$/;
+const spaceExp = /\s/g;
     const createUser = async(req, res) => {
 
         const {email, name, password, re_password} = req.body;
@@ -39,7 +39,7 @@ const spaceExp = /\s/g; //space regExp
         };
 
         try{
-            const exUser = await user.findOne({ where: {email: email}}); //user 중복 검사
+            const exUser = await user.findOne({ where: {email: email}});
             if (exUser !== null) {
                 return res.status(401).send({
                     ok: false,

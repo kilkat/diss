@@ -17,31 +17,6 @@ const server = http.createServer(app);
 
 app.set("port", process.env.PORT | 80);
 
-// const useSocket = (http) => {
-//     const io = new SocketIO.Server(http, {
-//       cors: {
-//         origin: 'http://localhost:80',
-//       },
-//     });
-  
-//     io.on('connection', (socket) => {
-//       console.log(`⚡: ${socket.id} user just connected!`);
-  
-//       socket.on('clientMessage', (message) => {
-//         // console.log(`Received message from client: ${message} | ${typeof message}`);
-//         console.log(message);
-//         // setColorFromSocketRecieved(message);
-//       });
-  
-//       socket.on('disconnect', () => {
-//         console.log('🔥: A user disconnected');
-//       });
-//     });
-// };
-
-// useSocket(server);
-
-// Router
 const router = require("./router");
 app.set("view engine", "ejs");
 app.use(express.json());
@@ -51,7 +26,6 @@ app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname, '/build/index.html'))
 })
 
-// Sequelize 연결
 sequelize.sync({ force: false })
     .then(() => {
         console.log("데이터베이스 연결 성공");

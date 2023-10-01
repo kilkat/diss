@@ -5,9 +5,9 @@ const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const dotenv = require("dotenv");
 
-const emailExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i; //email regExp
-const passwordExp = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,18}$/; //password regExp
-const spaceExp = /\s/g; //space regExp
+const emailExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+const passwordExp = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,18}$/;
+const spaceExp = /\s/g;
 
 const loginUser = async(req, res, next) => {
     
@@ -47,24 +47,22 @@ const loginUser = async(req, res, next) => {
 
         if(pass) {
             const key = process.env.COOKIE_SECRET;
-            // console.log(key);
             let token = '';
             token = jwt.sign(
                 {
                   type: "JWT",
                   email: email,
                   name: exUser.name,
-                  //profile: profile, 나중에는 admin인지 아닌지 값 넣을것
                 },
                 key,
                 {
-                  expiresIn: "15m", //15분후 만료
+                  expiresIn: "15m",
                   issuer: "토큰발급자",
                 }
               );
               console.log(token);
               // response
-              return res.status(200).send({ //client에게 토큰 모두를 반환합니다.
+              return res.status(200).send({
                 ok: true,
                 data: {
                   token

@@ -59,7 +59,6 @@ const getNewScanID = () => {
   });
 };
 
-// Stored XSS - URL 목록에서 write로 끝나는 URL을 추출하는 함수
 const getExactWriteEndingUrls = (urlList) => {
   return urlList.filter(url => {
     try {
@@ -73,7 +72,6 @@ const getExactWriteEndingUrls = (urlList) => {
   });
 }
 
-// Stored XSS - URL의 Form 태그에서 name 속성값 찾기
 const findFormTagsForStoredXssFastScan = async (url, href, payload) => {
   try {
       const response = await axios.get(url);
@@ -136,7 +134,6 @@ const checkAlertTriggeredInBrowser = async (url, expectedAlertMessage) => {
       await dialog.dismiss();
   });
 
-  // Wait for the network requests to complete
   await page.goto(url, { waitUntil: 'networkidle0' });
   await browser.close();
 
@@ -171,7 +168,7 @@ const processStoredXssFastScan = async (url, href) => {
 
 
 const processStoredXssAccurateScan = async (url, href, payload) => {
-  const forms = await findFormTagsForStoredXssFastScan(url, href); // 기존에 작성된 함수를 재사용합니다.
+  const forms = await findFormTagsForStoredXssFastScan(url, href);
   const triggeredPayloads = [];
   
   for (const form of forms) {
@@ -182,23 +179,21 @@ const processStoredXssAccurateScan = async (url, href, payload) => {
     const redirectUrl = await submitPostForStoredXssFastScan(form);
     
     if (redirectUrl) {
-      // Open the redirect URL in a browser using Puppeteer
-      const browser = await puppeteer.launch({ headless: true }); // headless mode (no GUI)
+      const browser = await puppeteer.launch({ headless: true });
       const page = await browser.newPage();
       await page.goto(redirectUrl);
-      await new Promise(resolve => setTimeout(resolve, 1)); // Wait for 5 seconds
+      await new Promise(resolve => setTimeout(resolve, 1));
       await browser.close();
       
-      // Check if stored_xss_scan_success_data is true (indicating the payload was successful)
       if (stored_xss_scan_success_data) {
         await scan.create({
-          scanID: currentScanID,  // 이 값은 함수 내에서 미리 정의되거나 전달되어야 합니다.
+          scanID: currentScanID,
           scanType: "Stored XSS",
           inputURL: href,
           scanURL: redirectUrl,
           scanPayload: payload
         });
-        stored_xss_scan_success_data = false; // 플래그 초기화
+        stored_xss_scan_success_data = false;
       }
     }
   }
@@ -212,7 +207,6 @@ const processStoredXssAccurateScan = async (url, href, payload) => {
 
 
 
-//input 태그 찾는 로직 추가해야됨, front: 데이터 넘어가면 result 페이지로 redirect 시켜야됨
 const xss_scan = async(req, res) => {
   const currentScanID = await getNewScanID();
 
@@ -257,7 +251,6 @@ const xss_scan = async(req, res) => {
               console.log(`${field}: ${headers[field]}`);
             }
 
-            // console.log(response_header[0].indexOf(':'))
 
 
           if(body.includes(payload)){
@@ -344,11 +337,9 @@ const xss_scan = async(req, res) => {
         const cheerio = require('cheerio');
         const puppeteer = require('puppeteer');
     
-        // 1. Get web page source (from findFormTagsForStoredXssFastScan)
         const response = await axios.get(url);
         const html = response.data;
     
-        // 2. Parse the HTML to find all form tags and their input fields (from findFormTagsForStoredXssFastScan)
         const $ = cheerio.load(html);
         const forms = [];
     
@@ -357,13 +348,11 @@ const xss_scan = async(req, res) => {
           const method = $(element).attr('method') || 'GET';
           const inputs = {};
     
-          // Handle input tags
           $(element).find('input[name]').each((i, inputElem) => {
             const inputName = $(inputElem).attr('name');
             inputs[inputName] = payload;
           });
     
-          // Handle textarea tags
           $(element).find('textarea[name]').each((i, textareaElem) => {
             const textareaName = $(textareaElem).attr('name');
             inputs[textareaName] = payload;
@@ -372,7 +361,6 @@ const xss_scan = async(req, res) => {
           forms.push({ action, method, data: inputs });
         });
     
-        // 3. Submit each form and get the redirect URL (from submitPostForStoredXssFastScan)
         for (const form of forms) {
           const browser = await puppeteer.launch({ 
             headless: true,
@@ -517,7 +505,6 @@ const os_command_injection = async (req, res) => {
           const response = await axios.get(victim_url);
 
 
-          // console.log(response.data.includes("<DIR>"))
           if(response.data.includes("root:x:0:0:root:/root:/bin/bash")) {
             os_command_injection_success_data = true;
             os_info_os_command_injection = "Linux Server"
@@ -528,9 +515,6 @@ const os_command_injection = async (req, res) => {
             os_info_os_command_injection = "Windows Server"
           }
           
-          // console.log(os_command_injection_payload)
-          // console.log(os_command_injection_success_data)
-          // console.log(victim_base_url)
           console.log(response.data)
           if(os_command_injection_success_data) {
             try {
@@ -546,12 +530,12 @@ const os_command_injection = async (req, res) => {
 
               os_command_injection_success_data = false;
             } catch (error) {
-              // console.error('Error creating scan of os_command_injection');
+              console.error('Error creating scan of os_command_injection');
               continue;
             }
           }
         } catch (error) {
-          // console.error('Error in payload loop of os_command_injection:', error.message);
+          console.error('Error in payload loop of os_command_injection:', error.message);
           continue;
         }
       }
