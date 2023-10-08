@@ -2,53 +2,58 @@ const express = require("express");
 const path = require("path");
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser'); // 쿠키 파서 미들웨어를 추가합니다.
 
 const router = express.Router();
 
 const scanningController = require('../controllers/scan.ctrl');
-
 const loginController = require("../controllers/login.ctrl");
 const registerController = require("../controllers/register.ctrl");
 const resultController = require("../controllers/result.ctrl");
 
+// 쿠키 파서를 사용하도록 설정합니다.
+router.use(cookieParser());
+
 router.post("/login", loginController.loginUser);
 
-router.post("/register", registerController.createUser);
+router.post("/register", authenticateUser, registerController.createUser);
 
-router.post("/scan_injection", scanningController.xss_scan);
+// authenticateUser 미들웨어를 사용하여 /scan_injection 라우트를 보호합니다.
+router.post("/scan_injection", authenticateUser, scanningController.xss_scan);
 
-router.post("/scan_reflcted_injection_success", scanningController.xss_scan_success)
+router.post("/scan_reflcted_injection_success", authenticateUser, scanningController.xss_scan_success);
 
-router.post("/scan_stored_injection_success", scanningController.stored_xss_scan_success)
+router.post("/scan_stored_injection_success", authenticateUser, scanningController.stored_xss_scan_success);
 
-router.post("/scan_traversal", scanningController.pathtraversal_scan);
+router.post("/scan_traversal", authenticateUser, scanningController.pathtraversal_scan);
 
-router.post("/scan_command", scanningController.os_command_injection);
+router.post("/scan_command", authenticateUser, scanningController.os_command_injection);
 
-router.get("/result_data/:scanId", resultController.scanResult)
+router.get("/result_data/:scanId", authenticateUser, resultController.scanResult);
 
-router.get('/protected', (req, res) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ message: 'Authorization header missing' });
+function authenticateUser(req, res, next) {
+    const token = req.cookies.token;
+    console.log("Received Token: ", token);
+    
+    if (!token) {
+        return res.status(401).json({ message: 'TOKEN_NOT_FOUND' });
     }
-  
-    const token = authHeader.split(' ')[1];
-  
-    jwt.verify(token, 'my_secret_key', (err, decoded) => {
-      if (err) {
-        return res.status(401).json({ message: 'Invalid token' });
-      }
-  
-      const userNumber = decoded.userNumber;
-      const user = users.find(u => u.number === userNumber);
-  
-      res.send({ message: `Hello, ${user.name}!` });
-    });
-  });
 
-router.get("*", function (req,res) {
-  res.sendFile(path.join(__dirname, '/../build/index.html'))
-})
+    const secretKey = process.env.COOKIE_SECRET;
+    jwt.verify(token, secretKey, (err, decoded) => {
+        if (err) {
+            console.error("Token verification error: ", err);
+            return res.status(401).json({ message: 'Invalid token' });
+        }
+        console.log("Decoded Token: ", decoded);
+        req.email = decoded.email;
+        next();
+    });
+}
+
+// 와일드카드 라우트는 라우터의 마지막 부분에 위치합니다.
+router.get("*", function (req, res) {
+    res.sendFile(path.join(__dirname, '/../build/index.html'));
+});
 
 module.exports = router;

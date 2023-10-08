@@ -21,7 +21,7 @@ module.exports = class scan extends Sequelize.Model {
           type: Sequelize.STRING(40),
           allowNull: true,
           required: true,
-          unique: true,
+          unique: false,
         },
         scanType: {
           type: Sequelize.STRING(40),

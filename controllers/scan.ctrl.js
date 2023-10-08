@@ -215,6 +215,7 @@ const xss_scan = async(req, res) => {
   const href = req.body.href;
   const type = req.body.type;
   const option = req.body.option;
+  const userEmail = req.email;
   await crawl(href);
 
   const site_tree = fs.readFileSync('site_tree.txt').toString().split("\n");
@@ -315,12 +316,15 @@ const xss_scan = async(req, res) => {
     if (option === "fast") {
         const writeUrls = getExactWriteEndingUrls(site_tree);
         
+      console.log("userEmail : " + userEmail)
+
         for (const url of writeUrls) {
             const triggeredPayloads = await processStoredXssFastScan(url, href);
   
             for (const payloadData of triggeredPayloads) {
                 await scan.create({
                     scanID: currentScanID,
+                    scanUserEmail: userEmail,
                     scanType: "Stored XSS",
                     inputURL: href,
                     scanURL: payloadData.url,
