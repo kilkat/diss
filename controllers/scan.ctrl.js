@@ -220,7 +220,7 @@ const xss_scan = async(req, res) => {
 
   const site_tree = fs.readFileSync('site_tree.txt').toString().split("\n");
 
-  if(type == "reflected"){
+  if(type == "reflection"){
     if(option == "fast"){
       const payload = "<script>alert('xss test');</script>";
         
@@ -257,6 +257,7 @@ const xss_scan = async(req, res) => {
           if(body.includes(payload)){
             scan.create({
               scanID: currentScanID,
+              scanUserEmail: userEmail,
               scanType: "Fast Scan Reflected XSS",
               inputURL: href,
               scanURL: victim_base_url,
@@ -289,6 +290,7 @@ const xss_scan = async(req, res) => {
             if (xss_scan_success_data) {
               scan.create({
                 scanID: currentScanID,
+                scanUserEmail: userEmail,
                 scanType: "Reflected XSS",
                 inputURL: href,
                 scanURL: victim_base_url,
@@ -313,8 +315,10 @@ const xss_scan = async(req, res) => {
   }
 
   else if (type === "stored") {
+
+    const writeUrls = getExactWriteEndingUrls(site_tree);
     if (option === "fast") {
-        const writeUrls = getExactWriteEndingUrls(site_tree);
+        
         
       console.log("userEmail : " + userEmail)
 
@@ -336,12 +340,15 @@ const xss_scan = async(req, res) => {
         }
     }
     else if (option == "accurate") {
+
+      const payload = fs.readFileSync('stored_xss_payload.txt').toString().split("\n");
+
       try {
         const axios = require('axios');
         const cheerio = require('cheerio');
         const puppeteer = require('puppeteer');
-    
-        const response = await axios.get(url);
+        for (const url of writeUrls) {
+          const response = await axios.get(url);
         const html = response.data;
     
         const $ = cheerio.load(html);
@@ -364,38 +371,43 @@ const xss_scan = async(req, res) => {
     
           forms.push({ action, method, data: inputs });
         });
-    
+
         for (const form of forms) {
-          const browser = await puppeteer.launch({ 
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox'] 
-          });
-          const page = await browser.newPage();
-          await page.goto(url, { waitUntil: 'networkidle2' });
-    
-          for (const [key, value] of Object.entries(form.data)) {
-            await page.type(`[name="${key}"]`, value);
-          }
-    
-          await Promise.all([
-            page.click(`form[action="${form.action}"] [type="submit"]`),
-            page.waitForNavigation({ waitUntil: 'networkidle2' })
-          ]);
-    
-          const redirectUrl = page.url();
-          await browser.close();
-    
-          if (stored_xss_scan_success_data) {
-            await scan.create({
-              scanID: currentScanID,
-              scanType: "Stored XSS",
-              inputURL: href,
-              scanURL: redirectUrl,
-              scanPayload: payload
+          for (const payload of stored_xss_payload_arr) {
+            const browser = await puppeteer.launch({ 
+              headless: true,
+              args: ['--no-sandbox', '--disable-setuid-sandbox'] 
             });
-            stored_xss_scan_success_data = false;
+            const page = await browser.newPage();
+            await page.goto(url, { waitUntil: 'networkidle2' });
+      
+            for (const [key, value] of Object.entries(form.data)) {
+              await page.type(`[name="${key}"]`, value);
+            }
+      
+            await Promise.all([
+              page.click(`form[action="${form.action}"] [type="submit"]`),
+              page.waitForNavigation({ waitUntil: 'networkidle2' })
+            ]);
+      
+            const redirectUrl = page.url();
+            await browser.close();
+      
+            if (stored_xss_scan_success_data) {
+              await scan.create({
+                scanID: currentScanID,
+                scanType: "Stored XSS",
+                inputURL: href,
+                scanURL: redirectUrl,
+                scanPayload: payload
+              });
+              stored_xss_scan_success_data = false;
+            }
           }
-        }
+          }
+          } 
+          
+
       } catch (error) {
         console.error("Error in accurate scanning:", error);
         return res.status(500).json({ error: "Internal Server Error during accurate scanning" });
@@ -417,6 +429,7 @@ const pathtraversal_scan = async(req, res) => {
   const href = req.body.href;
   const type = req.body.type;
   const option = req.body.option;
+  const userEmail = req.email;
 
   await crawl(url);
 
@@ -450,6 +463,7 @@ const pathtraversal_scan = async(req, res) => {
           if (status_linux === 200) {   
               scan.create({
               scanID: currentScanID,
+              scanUserEmail: userEmail,
               scanType: "Path Traversal",
               inputURL: url,
               scanURL: site_tree[i],
@@ -461,6 +475,7 @@ const pathtraversal_scan = async(req, res) => {
           else if (status_windows === 200) {
             scan.create({
               scanID: currentScanID,
+              scanUserEmail: userEmail,
               scanType: "Path Traversal",
               inputURL: url,
               scanURL: site_tree[i],
@@ -488,6 +503,7 @@ const os_command_injection = async (req, res) => {
   const href = req.body.href;
   const type = req.body.type;
   const option = req.body.option;
+  const userEmail = req.email;
 
   await crawl(href);
 
@@ -525,6 +541,7 @@ const os_command_injection = async (req, res) => {
               console.log("status is", response.status)
               await scan.create({
                 scanID: currentScanID,
+                scanUserEmail: userEmail,
                 scanType: "OS Command Injection",
                 inputURL: href,
                 scanURL: victim_base_url,

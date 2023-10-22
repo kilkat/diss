@@ -16,14 +16,14 @@ router.use(cookieParser());
 
 router.post("/login", loginController.loginUser);
 
-router.post("/register", authenticateUser, registerController.createUser);
+router.post("/register", registerController.createUser);
 
 // authenticateUser 미들웨어를 사용하여 /scan_injection 라우트를 보호합니다.
 router.post("/scan_injection", authenticateUser, scanningController.xss_scan);
 
-router.post("/scan_reflcted_injection_success", authenticateUser, scanningController.xss_scan_success);
+router.post("/scan_reflcted_injection_success", scanningController.xss_scan_success);
 
-router.post("/scan_stored_injection_success", authenticateUser, scanningController.stored_xss_scan_success);
+router.post("/scan_stored_injection_success", scanningController.stored_xss_scan_success);
 
 router.post("/scan_traversal", authenticateUser, scanningController.pathtraversal_scan);
 
