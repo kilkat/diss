@@ -15,13 +15,19 @@ var db = mysql.createConnection({
   const scanResultList = async(req, res) => {
     let userEmail = req.email;
     db.query('SELECT * FROM scan WHERE scanUserEmail = ?', [userEmail], function(err, result) {
-        var dataList = [];
-        for (var diss of result) {
-            dataList.push(diss)
+        const uniqueMap = {};
+        const dataList = [];
+
+        for (const diss of result) {
+            if (!uniqueMap[diss.scanID]) {
+                uniqueMap[diss.scanID] = true;
+                dataList.push(diss);
+            }
         };
+
         res.json(dataList);
     })
-  }
+}
 
   const scanResult = async(req ,res) => {
     let scanId = req.params.scanId;

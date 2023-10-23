@@ -74,7 +74,10 @@ const loginUser = async(req, res, next) => {
               return res.status(200).send({
                 ok: true,
                 data: {
-                  token
+                  id: exUser.id,
+                  token,
+                  email: email,
+                  name: exUser.name,
                 },
               });
         }else{
