@@ -29,6 +29,8 @@ router.post("/scan_traversal", authenticateUser, scanningController.pathtraversa
 
 router.post("/scan_command", authenticateUser, scanningController.os_command_injection);
 
+router.get("/lists", authenticateUser, resultController.scanResultList)
+
 router.get("/result_data/:scanId", authenticateUser, resultController.scanResult);
 
 function authenticateUser(req, res, next) {
