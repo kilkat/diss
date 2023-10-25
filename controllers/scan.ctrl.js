@@ -21,6 +21,7 @@ const urlModule = require('url');
 
 
 
+
 const reflected_xss_payload_arr = fs.readFileSync('reflected_xss_payload.txt').toString().split("\n");
 const xss_fast_scan_payload = fs.readFileSync('xss_fast_scan_payload.txt').toString().split("\n");
 const os_command_injection_payload_arr = fs.readFileSync('os_command_injection_payload.txt').toString().split("\n");
@@ -28,22 +29,19 @@ const stored_xss_payload_arr = fs.readFileSync('stored_xss_payload.txt').toStrin
 
 let scanID = 0;
 
-let xss_scan_success_data = false
+let xss_scan_success_data = false;
 
 const xss_scan_success = async(req, res) => {
 
-  xss_scan_success_data = true
-
-  return xss_scan_success_data
+  xss_scan_success_data = true;
+  res.json({ success: xss_scan_success_data});
 }
 
-let stored_xss_scan_success_data = false
+let stored_xss_scan_success_data = false;
 
 const stored_xss_scan_success = async(req, res) => {
-
-  stored_xss_scan_success_data = true
-
-  return stored_xss_scan_success_data
+  stored_xss_scan_success_data = true;
+  res.json({ success: stored_xss_scan_success_data });
 }
 
 os_command_injection_success_data = false
@@ -122,25 +120,6 @@ const submitPostForStoredXssFastScan = async (form) => {
 }
 };
 
-const checkAlertTriggeredInBrowser = async (url, expectedAlertMessage) => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-
-  let isAlertTriggered = false;
-  page.on('dialog', async (dialog) => {
-      if (dialog.message() === expectedAlertMessage) {
-          isAlertTriggered = true;
-      }
-      await dialog.dismiss();
-  });
-
-  await page.goto(url, { waitUntil: 'networkidle0' });
-  await browser.close();
-
-  return isAlertTriggered;
-};
-
-
 const processStoredXssFastScan = async (url, href) => {
   const triggeredPayloads = [];
   const forms = await findFormTagsForStoredXssFastScan(url, href);
@@ -165,47 +144,6 @@ const processStoredXssFastScan = async (url, href) => {
 
   return triggeredPayloads;
 };
-
-
-const processStoredXssAccurateScan = async (url, href, payload) => {
-  const forms = await findFormTagsForStoredXssFastScan(url, href);
-  const triggeredPayloads = [];
-  
-  for (const form of forms) {
-    form.data = Object.fromEntries(
-      Object.entries(form.data).map(([key, value]) => [key, payload])
-    );
-
-    const redirectUrl = await submitPostForStoredXssFastScan(form);
-    
-    if (redirectUrl) {
-      const browser = await puppeteer.launch({ headless: true });
-      const page = await browser.newPage();
-      await page.goto(redirectUrl);
-      await new Promise(resolve => setTimeout(resolve, 1));
-      await browser.close();
-      
-      if (stored_xss_scan_success_data) {
-        await scan.create({
-          scanID: currentScanID,
-          scanType: "Stored XSS",
-          inputURL: href,
-          scanURL: redirectUrl,
-          scanPayload: payload
-        });
-        stored_xss_scan_success_data = false;
-      }
-    }
-  }
-
-  return triggeredPayloads;
-};
-
-
-
-
-
-
 
 const xss_scan = async(req, res) => {
   const currentScanID = await getNewScanID();
@@ -253,7 +191,6 @@ const xss_scan = async(req, res) => {
             }
 
 
-
           if(body.includes(payload)){
             scan.create({
               scanID: currentScanID,
@@ -286,7 +223,9 @@ const xss_scan = async(req, res) => {
 
             const browser = await puppeteer.launch({headless:'new'});
             const page = await browser.newPage();
-    
+
+            
+
             if (xss_scan_success_data) {
               scan.create({
                 scanID: currentScanID,
@@ -385,22 +324,25 @@ const xss_scan = async(req, res) => {
               await page.type(`[name="${key}"]`, value);
             }
       
-            await Promise.all([
-              page.click(`form[action="${form.action}"] [type="submit"]`),
-              page.waitForNavigation({ waitUntil: 'networkidle2' })
-            ]);
+            await page.click(`form[action="${form.action}"] [type="submit"]`);
+            await page.waitForNavigation({ waitUntil: 'networkidle2' });
       
             const redirectUrl = page.url();
             await browser.close();
-      
+
             if (stored_xss_scan_success_data) {
-              await scan.create({
-                scanID: currentScanID,
-                scanType: "Stored XSS",
-                inputURL: href,
-                scanURL: redirectUrl,
-                scanPayload: payload
-              });
+              try {
+                await scan.create({
+                    scanID: currentScanID,
+                    scanType: "Stored XSS",
+                    inputURL: href,
+                    scanURL: redirectUrl,
+                    scanPayload: payload
+                });
+                stored_xss_scan_success_data = false;
+            } catch (error) {
+                console.error("Error while saving to database:", error);
+            }
               stored_xss_scan_success_data = false;
             }
           }
