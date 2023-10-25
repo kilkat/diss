@@ -204,52 +204,53 @@ const xss_scan = async(req, res) => {
         });
       }
     }
-    } else if(option == "accurate"){
+  } else if (option == "accurate") {
+    for (let i in site_tree) {
+        const match1 = site_tree[i].indexOf("?");
+        const match2 = site_tree[i].indexOf("=");
+        const match3 = site_tree[i].match(regexp);
+        const match4 = site_tree[i].indexOf("&");
 
-    for(let i in site_tree){
-      const match1 = site_tree[i].indexOf("?");
-      const match2 = site_tree[i].indexOf("=");
-      const match3 = site_tree[i].match(regexp);
-      const match4 = site_tree[i].indexOf("&");
+        if (match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1) {
+            for (let payload of reflected_xss_payload_arr) {
+                try {
+                    let victim_base_url = site_tree[i].substr(0, match2 + 1);
+                    let victim_url = victim_base_url + payload;
+                    console.log(victim_url);
 
-      if(match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1){
-        for (let j in reflected_xss_payload_arr) {
-          payload = reflected_xss_payload_arr[j];
+                    const browser = await puppeteer.launch({ headless: 'new' });
+                    const page = await browser.newPage();
 
-          try {
-            let victim_base_url = site_tree[i].substr(0, match2 + 1)
-            let victim_url = victim_base_url + payload;
-            console.log(victim_url);
+                    page.on('request', request => {
+                        if (request.url() == "http://127.0.0.1/scan_reflected_injection_success") {
+                            xss_scan_success_data = true;
+                        }
+                    });
 
-            const browser = await puppeteer.launch({headless:'new'});
-            const page = await browser.newPage();
+                    await page.setDefaultNavigationTimeout(10000);
+                    await page.goto(victim_url);
+                    await browser.close();
 
-            
+                    if (xss_scan_success_data) {
+                        await scan.create({
+                            scanID: currentScanID,
+                            scanUserEmail: userEmail,
+                            scanType: "Reflected XSS",
+                            inputURL: href,
+                            scanURL: victim_base_url,
+                            scanPayload: payload
+                        });
 
-            if (xss_scan_success_data) {
-              scan.create({
-                scanID: currentScanID,
-                scanUserEmail: userEmail,
-                scanType: "Reflected XSS",
-                inputURL: href,
-                scanURL: victim_base_url,
-                scanPayload: payload
-              });
-    
-              xss_scan_success_data = false
+                        xss_scan_success_data = false;
+                    }
+                } catch (error) {
+                    continue;
+                }
             }
-    
-            await page.setDefaultNavigationTimeout(1);
-            await page.goto(victim_url);
-            await browser.close();
-    
-          } catch (error) {
-            continue;
-          }
-      }
-      }
+        }
     }
-  } 
+}
+
 
   }
 

@@ -21,7 +21,7 @@ router.post("/register", registerController.createUser);
 // authenticateUser 미들웨어를 사용하여 /scan_injection 라우트를 보호합니다.
 router.post("/scan_injection", authenticateUser, scanningController.xss_scan);
 
-router.get("/scan_reflcted_injection_success", scanningController.xss_scan_success);
+router.get("/scan_reflcted_injection_success");
 
 router.get("/scan_stored_injection_success", scanningController.stored_xss_scan_success);
 
