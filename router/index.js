@@ -31,7 +31,7 @@ router.post("/scan_command", authenticateUser, scanningController.os_command_inj
 
 router.get("/lists", authenticateUser, resultController.scanResultList)
 
-router.get("/result_data/:scanId", authenticateUser, resultController.scanResult);
+router.get("/lists/:scanId", authenticateUser, resultController.scanResult);
 
 function authenticateUser(req, res, next) {
     const token = req.cookies.token;
