@@ -8,6 +8,7 @@ let visited = {};
 const crawl = async (url) => {
   visited = {};
   fs.writeFileSync('site_tree.txt', '');
+  fs.writeFileSync('form_textarea.txt', '');  // form_textarea.txt 파일 초기화
 
   await crawlUrl(url);
 };
@@ -28,11 +29,15 @@ const crawlUrl = async (originUrl, currentUrl = originUrl) => {
       let href = $(element).attr('href');
       let fullUrl = urlLib.resolve(currentUrl, href);
 
-      // originUrl과 현재 페이지 URL에서만 링크를 추가
       if (fullUrl.startsWith(originUrl) || fullUrl === currentUrl) {
         links.push(fullUrl);
       }
     });
+
+    // <form> 태그 내의 <textarea> 태그 검사
+    if ($('form textarea').length > 0) {
+      saveFormWithTextAreaUrl(currentUrl);
+    }
 
     console.log(`Found ${links.length} links at ${currentUrl}`);
     await Promise.all(links.map(link => crawlUrl(originUrl, link)));
@@ -52,5 +57,14 @@ const saveUrl = (url) => {
     }
   });
 }
+
+const saveFormWithTextAreaUrl = (url) => {
+  const urlWithNewLine = url + '\n';
+  fs.appendFileSync('form_textarea.txt', urlWithNewLine, (err) => {
+    if (err) {
+      console.error('Error in saving form textarea url:', err);
+    }
+  });
+};
 
 module.exports = crawl;

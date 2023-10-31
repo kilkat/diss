@@ -57,19 +57,6 @@ const getNewScanID = () => {
   });
 };
 
-const getExactWriteEndingUrls = (urlList) => {
-  return urlList.filter(url => {
-    try {
-      const path = new URL(url).pathname; 
-      const segments = path.split('/');
-      const lastSegment = segments[segments.length - 1];
-      return lastSegment === 'write';
-    } catch (e) {
-      return false; 
-    }
-  });
-}
-
 const findFormTagsForStoredXssFastScan = async (url, href, payload) => {
   try {
       const response = await axios.get(url);
@@ -157,6 +144,7 @@ const xss_scan = async(req, res) => {
   await crawl(href);
 
   const site_tree = fs.readFileSync('site_tree.txt').toString().split("\n");
+  const form_testarea_site_tree = fs.readFileSync('form_textarea.txt').toString().split("\n");
 
   if(type == "reflection"){
     if(option == "fast"){
@@ -255,14 +243,13 @@ const xss_scan = async(req, res) => {
   }
 
   else if (type === "stored") {
-
-    const writeUrls = getExactWriteEndingUrls(site_tree);
+    
     if (option === "fast") {
         
         
       console.log("userEmail : " + userEmail)
 
-        for (const url of writeUrls) {
+        for (const url of form_testarea_site_tree) {
             const triggeredPayloads = await processStoredXssFastScan(url, href);
   
             for (const payloadData of triggeredPayloads) {
@@ -287,7 +274,7 @@ const xss_scan = async(req, res) => {
         const axios = require('axios');
         const cheerio = require('cheerio');
         const puppeteer = require('puppeteer');
-        for (const url of writeUrls) {
+        for (const url of form_testarea_site_tree) {
           const response = await axios.get(url);
         const html = response.data;
     
