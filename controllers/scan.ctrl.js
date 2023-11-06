@@ -27,6 +27,13 @@ const xss_fast_scan_payload = fs.readFileSync('xss_fast_scan_payload.txt').toStr
 const os_command_injection_payload_arr = fs.readFileSync('os_command_injection_payload.txt').toString().split("\n");
 const stored_xss_payload_arr = fs.readFileSync('stored_xss_payload.txt').toString().split("\n");
 
+scan_cancle_bool = false
+
+const scan_cancle = async(req, res) =>  {
+  scan_cancle_bool = true;
+  return scan_cancle_bool
+}
+
 let scanID = 0;
 
 let xss_scan_success_data = false;
@@ -88,7 +95,7 @@ const findFormTagsForStoredXssFastScan = async (url, href, payload) => {
 };
 
 
-const submitPostForStoredXssFastScan = async (form) => {
+const  submitPostForStoredXssFastScan = async (form) => {
   try {
     let redirectUrl = null;
     if (form.method.toLowerCase() === 'post') {
@@ -134,6 +141,7 @@ const processStoredXssFastScan = async (url, href) => {
 
 const xss_scan = async(req, res) => {
   const currentScanID = await getNewScanID();
+  scan_cancle_bool = false
 
   const regexp = /=/g;
 
@@ -178,6 +186,9 @@ const xss_scan = async(req, res) => {
               console.log(`${field}: ${headers[field]}`);
             }
 
+          if (scan_cancle_bool == true) {
+            return;
+          }
 
           if(body.includes(payload)){
             scan.create({
@@ -187,7 +198,7 @@ const xss_scan = async(req, res) => {
               inputURL: href,
               scanURL: victim_base_url,
               scanPayload: payload
-          });
+            });
           }
         });
       }
@@ -219,6 +230,10 @@ const xss_scan = async(req, res) => {
                     await page.goto(victim_url);
                     await browser.close();
 
+                    if (scan_cancle_bool == true) {
+                      return;
+                    }
+
                     if (xss_scan_success_data) {
                         await scan.create({
                             scanID: currentScanID,
@@ -245,10 +260,6 @@ const xss_scan = async(req, res) => {
   else if (type === "stored") {
     
     if (option === "fast") {
-        
-        
-      console.log("userEmail : " + userEmail)
-
         for (const url of form_testarea_site_tree) {
             const triggeredPayloads = await processStoredXssFastScan(url, href);
   
@@ -262,10 +273,9 @@ const xss_scan = async(req, res) => {
                     scanPayload: payloadData.payload
                 });
             }
-            
-            console.log("Test complete for URL: " + url);
         }
     }
+
     else if (option == "accurate") {
 
       const payload = fs.readFileSync('stored_xss_payload.txt').toString().split("\n");
@@ -318,6 +328,10 @@ const xss_scan = async(req, res) => {
             const redirectUrl = page.url();
             await browser.close();
 
+            if (scan_cancle_bool == true) {
+              return;
+            }
+
             if (stored_xss_scan_success_data) {
               try {
                 await scan.create({
@@ -350,6 +364,7 @@ const xss_scan = async(req, res) => {
 //path traversal 취약점 스캔로직
 const pathtraversal_scan = async(req, res) => {
   const currentScanID = await getNewScanID();
+  scan_cancle_bool = false
 
   const url = req.body.href;
   const path_traversal_payload_arr_linux = "../";
@@ -402,6 +417,11 @@ const pathtraversal_scan = async(req, res) => {
               });
               break;
           }
+
+          if (scan_cancle_bool == true) {
+            return;
+          }
+
           else if (status_windows === 200) {
             scan.create({
               scanID: currentScanID,
@@ -428,6 +448,7 @@ const pathtraversal_scan = async(req, res) => {
 
 const os_command_injection = async (req, res) => {
   const currentScanID = await getNewScanID();
+  scan_cancle_bool = false
   const regexp = /=/g;
 
   const href = req.body.href;
@@ -463,6 +484,10 @@ const os_command_injection = async (req, res) => {
           if (response.data.includes("&lt;DIR&gt;")) {
             os_command_injection_success_data = true;
             os_info_os_command_injection = "Windows Server"
+          }
+
+          if (scan_cancle_bool == true) {
+            return;
           }
           
           console.log(response.data)
@@ -506,4 +531,5 @@ module.exports = {
     stored_xss_scan_success,
     pathtraversal_scan,
     os_command_injection,
+    scan_cancle,
 }

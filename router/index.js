@@ -33,8 +33,11 @@ router.get("/lists", authenticateUser, resultController.scanResultList)
 
 router.get("/lists/:scanId", authenticateUser, resultController.scanResult);
 
+router.post("/scan_cancel", authenticateUser,  scanningController.scan_cancle);
+
 function authenticateUser(req, res, next) {
-    const token = req.cookies.token;
+    let token = req.headers.authorization;
+    token = token.split(' ')[1]
     console.log("Received Token: ", token);
     
     if (!token) {

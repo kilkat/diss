@@ -63,13 +63,6 @@ const loginUser = async(req, res, next) => {
               console.log("Generated Token Payload: ", { email: email, name: exUser.name });
               console.log(token);
 
-              res.cookie('token', token, {
-                httpOnly: true,
-                maxAge: 900000,  // 15분 (15m * 60s * 1000ms)
-                secure: false,
-                sameSite: 'Strict'
-              });
-
               // response
               return res.status(200).send({
                 ok: true,
