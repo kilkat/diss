@@ -619,7 +619,7 @@ const os_command_injection = async (req, res) => {
 const sql_injection_scan = async (req, res) => {
   const currentScanID = await getNewScanID();
   const href = req.body.href;
-  const userEmail = req.body.email;
+  const userEmail = req.email;
 
   await crawl(href);
 
