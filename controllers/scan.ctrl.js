@@ -18,7 +18,7 @@ const request = require('request');
 const SocketIO = require('socket.io');
 const { Socket } = require('dgram');
 const urlModule = require('url');
-const { performance } = require('perf_hooks'); // 시간 측정을 위한 모듈
+const { performance } = require('perf_hooks');
 
 
 
@@ -150,18 +150,18 @@ const findFormTagsForSqlInjectionScan = async (url, href, payloads) => {
 
     const forms = [];
     $('form').each((index, element) => {
-      const action = $(element).attr('action') || ''; // 현재 폼의 action이 없다면 현재 URL 사용
+      const action = $(element).attr('action') || '';
       const method = $(element).attr('method') || 'get';
-      // 각 SQL 인젝션 페이로드에 대해 폼 데이터 배열 생성
+
       payloads.forEach((payload) => {
         const formData = {};
         $(element).find('input[name], textarea[name], select[name]').each((i, inputElement) => {
           const inputName = $(inputElement).attr('name');
-          formData[inputName] = payload; // SQL 인젝션 페이로드 사용
+          formData[inputName] = payload;
         });
 
         forms.push({
-          url: href + action, // 폼 데이터를 보낼 완전한 URL
+          url: href + action,
           method,
           data: formData
         });
@@ -183,14 +183,12 @@ const sendRequest = async (url, method, data) => {
       method: method,
       url: url,
       data: data,
-      timeout: 2000, // Set timeout to 2000 milliseconds (2 seconds)
+      timeout: 2000,
     };
 
-    // axios를 사용하여 HTTP 요청을 보냅니다.
     const response = await axios(options);
     const endTime = performance.now();
 
-    // 성공한 응답을 반환합니다.
     return {
       time: endTime - startTime,
       body: response.data,
@@ -201,15 +199,13 @@ const sendRequest = async (url, method, data) => {
   } catch (error) {
     const endTime = performance.now();
 
-    // 에러가 발생한 경우, 에러 정보를 반환합니다.
-    // If the request is aborted due to timeout, 'error.code' will be 'ECONNABORTED'
     const isTimeout = error.code === 'ECONNABORTED';
     const timeoutMessage = isTimeout ? 'The request timed out after 2 seconds' : error.message;
 
     return {
       time: endTime - startTime,
       message: timeoutMessage,
-      // axios 에러 객체에는 HTTP 상태 코드가 포함될 수 있습니다.
+
       statusCode: error.response ? error.response.status : null,
       headers: error.response ? error.response.headers : null,
       body: error.response ? error.response.data : null
@@ -450,8 +446,6 @@ const xss_scan = async(req, res) => {
   }
 }
 
-
-//path traversal 취약점 스캔로직
 const pathtraversal_scan = async(req, res) => {
   const currentScanID = await getNewScanID();
   scan_cancel_bool = false
@@ -647,7 +641,6 @@ const sql_injection_scan = async (req, res) => {
           dataWithPayload[inputName] = payload;
         }
 
-        // Attack scan with payload
         const startAttackTime = performance.now();
         const response_scan = await sendRequest(form.url, form.method, dataWithPayload);
         const endAttackTime = performance.now();
@@ -667,7 +660,7 @@ const sql_injection_scan = async (req, res) => {
             inputURL: href,
             scanURL: form.url,
             scanPayload: payload,
-            durationDifference: durationDifference // Save the time difference if needed
+            durationDifference: durationDifference
           });
         }
       }

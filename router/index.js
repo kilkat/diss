@@ -58,7 +58,6 @@ function authenticateUser(req, res, next) {
     });
 }
 
-// 와일드카드 라우트는 라우터의 마지막 부분에 위치합니다.
 router.get("*", function (req, res) {
     res.sendFile(path.join(__dirname, '/../build/index.html'));
 });
