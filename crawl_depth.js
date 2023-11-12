@@ -8,7 +8,7 @@ let visited = {};
 const crawl = async (url) => {
   visited = {};
   fs.writeFileSync('site_tree.txt', '');
-  fs.writeFileSync('form_textarea.txt', '');  // form_textarea.txt 파일 초기화
+  fs.writeFileSync('form.txt', '');  // form_textarea.txt 파일 초기화
 
   await crawlUrl(url);
 };
@@ -35,7 +35,7 @@ const crawlUrl = async (originUrl, currentUrl = originUrl) => {
     });
 
     // <form> 태그 내의 <textarea> 태그 검사
-    if ($('form textarea').length > 0) {
+    if ($('form').length > 0) {
       saveFormWithTextAreaUrl(currentUrl);
     }
 
@@ -60,7 +60,7 @@ const saveUrl = (url) => {
 
 const saveFormWithTextAreaUrl = (url) => {
   const urlWithNewLine = url + '\n';
-  fs.appendFileSync('form_textarea.txt', urlWithNewLine, (err) => {
+  fs.appendFileSync('form.txt', urlWithNewLine, (err) => {
     if (err) {
       console.error('Error in saving form textarea url:', err);
     }

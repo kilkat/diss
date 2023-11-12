@@ -33,7 +33,9 @@ router.get("/lists", authenticateUser, resultController.scanResultList)
 
 router.get("/lists/:scanId", authenticateUser, resultController.scanResult);
 
-router.post("/scan_cancel", authenticateUser,  scanningController.scan_cancle);
+router.post("/scan_cancel", authenticateUser,  scanningController.scan_cancel);
+
+router.post("/scan_sqlinjection", authenticateUser, scanningController.sql_injection_scan);
 
 function authenticateUser(req, res, next) {
     let token = req.headers.authorization;

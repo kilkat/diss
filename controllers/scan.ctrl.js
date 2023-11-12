@@ -18,6 +18,7 @@ const request = require('request');
 const SocketIO = require('socket.io');
 const { Socket } = require('dgram');
 const urlModule = require('url');
+const { performance } = require('perf_hooks'); // 시간 측정을 위한 모듈
 
 
 
@@ -26,12 +27,13 @@ const reflected_xss_payload_arr = fs.readFileSync('reflected_xss_payload.txt').t
 const xss_fast_scan_payload = fs.readFileSync('xss_fast_scan_payload.txt').toString().split("\n");
 const os_command_injection_payload_arr = fs.readFileSync('os_command_injection_payload.txt').toString().split("\n");
 const stored_xss_payload_arr = fs.readFileSync('stored_xss_payload.txt').toString().split("\n");
+const sql_injection_payload = fs.readFileSync('sql_injection_payload.txt').toString().split("\n");
 
-scan_cancle_bool = false
+scan_cancel_bool = false
 
-const scan_cancle = async(req, res) =>  {
-  scan_cancle_bool = true;
-  return scan_cancle_bool
+const scan_cancel = async(req, res) =>  {
+  scan_cancel_bool = true;
+  return scan_cancel_bool
 }
 
 let scanID = 0;
@@ -139,9 +141,90 @@ const processStoredXssFastScan = async (url, href) => {
   return triggeredPayloads;
 };
 
+
+
+const findFormTagsForSqlInjectionScan = async (url, href, payloads) => {
+  try {
+    const response = await axios.get(url);
+    const $ = cheerio.load(response.data);
+
+    const forms = [];
+    $('form').each((index, element) => {
+      const action = $(element).attr('action') || ''; // 현재 폼의 action이 없다면 현재 URL 사용
+      const method = $(element).attr('method') || 'get';
+      // 각 SQL 인젝션 페이로드에 대해 폼 데이터 배열 생성
+      payloads.forEach((payload) => {
+        const formData = {};
+        $(element).find('input[name], textarea[name], select[name]').each((i, inputElement) => {
+          const inputName = $(inputElement).attr('name');
+          formData[inputName] = payload; // SQL 인젝션 페이로드 사용
+        });
+
+        forms.push({
+          url: href + action, // 폼 데이터를 보낼 완전한 URL
+          method,
+          data: formData
+        });
+      });
+    });
+
+    return forms;
+  } catch (error) {
+    console.error(`Failed to fetch and parse URL ${url}: ${error.message}`);
+    return [];
+  }
+};
+
+const sendRequest = async (url, method, data) => {
+  const startTime = performance.now();
+
+  try {
+    const options = {
+      method: method,
+      url: url,
+      data: data,
+      timeout: 2000, // Set timeout to 2000 milliseconds (2 seconds)
+    };
+
+    // axios를 사용하여 HTTP 요청을 보냅니다.
+    const response = await axios(options);
+    const endTime = performance.now();
+
+    // 성공한 응답을 반환합니다.
+    return {
+      time: endTime - startTime,
+      body: response.data,
+      statusCode: response.status,
+      headers: response.headers
+    };
+
+  } catch (error) {
+    const endTime = performance.now();
+
+    // 에러가 발생한 경우, 에러 정보를 반환합니다.
+    // If the request is aborted due to timeout, 'error.code' will be 'ECONNABORTED'
+    const isTimeout = error.code === 'ECONNABORTED';
+    const timeoutMessage = isTimeout ? 'The request timed out after 2 seconds' : error.message;
+
+    return {
+      time: endTime - startTime,
+      message: timeoutMessage,
+      // axios 에러 객체에는 HTTP 상태 코드가 포함될 수 있습니다.
+      statusCode: error.response ? error.response.status : null,
+      headers: error.response ? error.response.headers : null,
+      body: error.response ? error.response.data : null
+    };
+  }
+};
+
+
+
+
+
+
 const xss_scan = async(req, res) => {
   const currentScanID = await getNewScanID();
-  scan_cancle_bool = false
+  scan_cancel_bool = false
 
   const regexp = /=/g;
 
@@ -152,7 +235,7 @@ const xss_scan = async(req, res) => {
   await crawl(href);
 
   const site_tree = fs.readFileSync('site_tree.txt').toString().split("\n");
-  const form_testarea_site_tree = fs.readFileSync('form_textarea.txt').toString().split("\n");
+  const form_site_tree = fs.readFileSync('form.txt').toString().split("\n");
 
   if(type == "reflection"){
     if(option == "fast"){
@@ -186,7 +269,7 @@ const xss_scan = async(req, res) => {
               console.log(`${field}: ${headers[field]}`);
             }
 
-          if (scan_cancle_bool == true) {
+          if (scan_cancel_bool == true) {
             return;
           }
 
@@ -230,7 +313,7 @@ const xss_scan = async(req, res) => {
                     await page.goto(victim_url);
                     await browser.close();
 
-                    if (scan_cancle_bool == true) {
+                    if (scan_cancel_bool == true) {
                       return;
                     }
 
@@ -245,6 +328,7 @@ const xss_scan = async(req, res) => {
                         });
 
                         xss_scan_success_data = false;
+                        break;
                     }
                 } catch (error) {
                     continue;
@@ -260,18 +344,23 @@ const xss_scan = async(req, res) => {
   else if (type === "stored") {
     
     if (option === "fast") {
-        for (const url of form_testarea_site_tree) {
+        for (const url of form_site_tree) {
             const triggeredPayloads = await processStoredXssFastScan(url, href);
   
             for (const payloadData of triggeredPayloads) {
-                await scan.create({
-                    scanID: currentScanID,
-                    scanUserEmail: userEmail,
-                    scanType: "Stored XSS",
-                    inputURL: href,
-                    scanURL: payloadData.url,
-                    scanPayload: payloadData.payload
-                });
+
+              if (scan_cancel_bool == true) {
+                return;
+              }
+
+              await scan.create({
+                  scanID: currentScanID,
+                  scanUserEmail: userEmail,
+                  scanType: "Stored XSS",
+                  inputURL: href,
+                  scanURL: payloadData.url,
+                  scanPayload: payloadData.payload
+              });
             }
         }
     }
@@ -284,7 +373,7 @@ const xss_scan = async(req, res) => {
         const axios = require('axios');
         const cheerio = require('cheerio');
         const puppeteer = require('puppeteer');
-        for (const url of form_testarea_site_tree) {
+        for (const url of form_site_tree) {
           const response = await axios.get(url);
         const html = response.data;
     
@@ -328,7 +417,7 @@ const xss_scan = async(req, res) => {
             const redirectUrl = page.url();
             await browser.close();
 
-            if (scan_cancle_bool == true) {
+            if (scan_cancel_bool == true) {
               return;
             }
 
@@ -346,6 +435,7 @@ const xss_scan = async(req, res) => {
                 console.error("Error while saving to database:", error);
             }
               stored_xss_scan_success_data = false;
+              break;
             }
           }
           }
@@ -364,7 +454,7 @@ const xss_scan = async(req, res) => {
 //path traversal 취약점 스캔로직
 const pathtraversal_scan = async(req, res) => {
   const currentScanID = await getNewScanID();
-  scan_cancle_bool = false
+  scan_cancel_bool = false
 
   const url = req.body.href;
   const path_traversal_payload_arr_linux = "../";
@@ -405,6 +495,11 @@ const pathtraversal_scan = async(req, res) => {
           const status_windows = response_windows.statusCode;
           console.log(victim_url_windows)
           console.log(path_traversal_scan_payload_windows)
+
+          if (scan_cancel_bool == true) {
+            return;
+          }
+
           if (status_linux === 200) {   
               scan.create({
               scanID: currentScanID,
@@ -418,7 +513,7 @@ const pathtraversal_scan = async(req, res) => {
               break;
           }
 
-          if (scan_cancle_bool == true) {
+          if (scan_cancel_bool == true) {
             return;
           }
 
@@ -448,7 +543,7 @@ const pathtraversal_scan = async(req, res) => {
 
 const os_command_injection = async (req, res) => {
   const currentScanID = await getNewScanID();
-  scan_cancle_bool = false
+  scan_cancel_bool = false
   const regexp = /=/g;
 
   const href = req.body.href;
@@ -486,7 +581,7 @@ const os_command_injection = async (req, res) => {
             os_info_os_command_injection = "Windows Server"
           }
 
-          if (scan_cancle_bool == true) {
+          if (scan_cancel_bool == true) {
             return;
           }
           
@@ -505,6 +600,7 @@ const os_command_injection = async (req, res) => {
               });
 
               os_command_injection_success_data = false;
+              break;
             } catch (error) {
               console.error('Error creating scan of os_command_injection');
               continue;
@@ -520,6 +616,68 @@ const os_command_injection = async (req, res) => {
 };
 
 
+const sql_injection_scan = async (req, res) => {
+  const currentScanID = await getNewScanID();
+  const href = req.body.href;
+  const userEmail = req.body.email;
+
+  await crawl(href);
+
+  const formUrls = fs.readFileSync('form.txt').toString().split("\n");
+
+  for (const url of formUrls) {
+    const forms = await findFormTagsForSqlInjectionScan(url, href, sql_injection_payload);
+
+    for (const form of forms) {
+
+      // Test scan without payload
+      const startTestTime = performance.now();
+      const response_test = await sendRequest(form.url, form.method, {});
+      const endTestTime = performance.now();
+      const testScanDuration = endTestTime - startTestTime;
+
+      if (response_test.statusCode !== 200) {
+        console.error("Failed to send request:", response_test.message);
+        continue;
+      }
+
+      for (const payload of sql_injection_payload) {
+        const dataWithPayload = { ...form.data };
+        for (const inputName in dataWithPayload) {
+          dataWithPayload[inputName] = payload;
+        }
+
+        // Attack scan with payload
+        const startAttackTime = performance.now();
+        const response_scan = await sendRequest(form.url, form.method, dataWithPayload);
+        const endAttackTime = performance.now();
+        const attackScanDuration = endAttackTime - startAttackTime;
+
+        const durationDifference = attackScanDuration - testScanDuration;
+
+        if (scan_cancel_bool == true) {
+          return;
+        }
+
+        if (durationDifference > 1000) {
+          await scan.create({
+            scanID: currentScanID,
+            scanUserEmail: userEmail,
+            scanType: "SQL Injection",
+            inputURL: href,
+            scanURL: form.url,
+            scanPayload: payload,
+            durationDifference: durationDifference // Save the time difference if needed
+          });
+        }
+      }
+    }
+  }
+
+  return res.status(200).send('SQL Injection scan completed.');
+};
+
+
 
 
 
@@ -531,5 +689,6 @@ module.exports = {
     stored_xss_scan_success,
     pathtraversal_scan,
     os_command_injection,
-    scan_cancle,
+    scan_cancel,
+    sql_injection_scan,
 }
