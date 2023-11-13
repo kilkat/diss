@@ -304,7 +304,7 @@ const xss_scan = async(req, res) => {
                     let victim_url = victim_base_url + payload;
                     console.log(victim_url);
 
-                    const browser = await puppeteer.launch({ headless: 'new' });
+                    const browser = await puppeteer.launch({ headless: true });
                     const page = await browser.newPage();
 
                     page.on('request', request => {
@@ -379,7 +379,7 @@ const xss_scan = async(req, res) => {
         const puppeteer = require('puppeteer');
         for (const url of form_site_tree) {
           const response = await axios.get(url);
-        const html = response.data;
+          const html = response.data;
     
         if (scan_cancel_bool == true) {
           return;
@@ -407,31 +407,49 @@ const xss_scan = async(req, res) => {
         });
 
         for (const form of forms) {
-          for (const payload of stored_xss_payload_arr) {
-            const browser = await puppeteer.launch({ 
-              headless: 'new',
-              args: ['--no-sandbox', '--disable-setuid-sandbox'] 
-            });
-            const page = await browser.newPage();
-            await page.goto(url, { waitUntil: 'networkidle2', timeout: 0 });
+          const browser = await puppeteer.launch({ 
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox'] 
+          });
+          const page = await browser.newPage();
+          await page.goto(url, { waitUntil: 'networkidle0'});
+            
 
             for (const [key, value] of Object.entries(form.data)) {
               const selector = `[name="${key}"]`;
               try {
-                const selector = `[name="${key}"]`;
-                await page.waitForSelector(selector, { visible: true, timeout: 5000 });
-                await page.type(selector, value);
+                await page.waitForSelector(selector, { visible: true, timeout: 10000 });
+
+                if (await page.$(selector) !== null) {
+                  await page.type(selector, value);
+                } else {
+                  console.error(`Element ${selector} not found`);
+                }
               } catch (error) {
                 console.error(`Error typing into ${selector}:`, error);
               }
             }
 
-            await Promise.all([
-              page.click(`form[action="${form.action}"] [type="submit"]`),
-              page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 0 }),
-            ]);
+            const formSelector = `form[action="${form.action}"] [type="submit"]`;
+            if (await page.$(formSelector) !== null) {
+              await Promise.all([
+                page.click(formSelector),
+                page.waitForNavigation({ waitUntil: 'networkidle0'}),
+              ]);
+            } else {
+              console.error(`Form ${formSelector} not found`);
+            }
 
-            const redirectUrl = response.url();
+            const redirectUrl = page.url();
+
+            for (const [key, value] of Object.entries(form.data)) {
+              const selector = `[name="${key}"]`;
+              try {
+                await page.$eval(selector, (el) => el.value = '');
+              } catch (error) {
+                console.error(`Error clearing ${selector}:`, error);
+              }
+            }
 
             await browser.close();
 
@@ -443,7 +461,7 @@ const xss_scan = async(req, res) => {
             const finalUrl = pageRedirectCheck.url();
             await browserRedirectCheck.close();
 
-            console.log(pageRedirectCheck.url)
+            console.log(pageRedirectCheck.url())
             console.log(stored_xss_scan_success_data)
 
             if (scan_cancel_bool == true) {
@@ -468,7 +486,6 @@ const xss_scan = async(req, res) => {
               stored_xss_scan_success_data = false;
               break;
             }
-          }
           }
           } 
           
