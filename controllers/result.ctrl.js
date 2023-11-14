@@ -12,7 +12,7 @@ var db = mysql.createConnection({
   });
   db.connect();
 
-  const scanResultList = async(req, res) => {
+const scanResultList = async(req, res) => {
     let userEmail = req.email;
     db.query('SELECT * FROM scan WHERE scanUserEmail = ? ORDER BY scanID DESC', [userEmail], function(err, result) {
         const uniqueMap = {};
@@ -29,9 +29,13 @@ var db = mysql.createConnection({
     })
 }
 
-  const scanResult = async(req ,res) => {
+const scanResult = async(req ,res) => {
     let scanId = req.params.scanId;
-    db.query('SELECT * FROM scan WHERE scanId = ?', [scanId], function(err, result){
+    let userEmail = req.email;
+    db.query('SELECT * FROM scan WHERE scanId = ? AND scanUserEmail = ?', [scanId, userEmail], function(err, result){
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
         var dataList = [];
         for (var diss of result){
             dataList.push(diss)
