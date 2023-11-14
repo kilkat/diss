@@ -19,6 +19,8 @@ const SocketIO = require('socket.io');
 const { Socket } = require('dgram');
 const urlModule = require('url');
 const { performance } = require('perf_hooks');
+const path = require('path');
+
 
 const resultController = require("../controllers/result.ctrl");
 
@@ -162,7 +164,7 @@ const findFormTagsForSqlInjectionScan = async (url, href, payloads) => {
 
       payloads.forEach((payload) => {
         const formData = {};
-        $(element).find('input[name], textarea[name], select[name]').each((i, inputElement) => {
+        $(element).find('input[name], textarea[name]').each((i, inputElement) => {
           const inputName = $(inputElement).attr('name');
           formData[inputName] = payload;
         });
@@ -220,9 +222,46 @@ const sendRequest = async (url, method, data) => {
   }
 };
 
+const downloadFile = async (url, downloadPath, filename) => {
+  // Launch the browser and open a new page
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+
+  // Set the download path
+  await page._client.send('Page.setDownloadBehavior', {
+    behavior: 'allow',
+    downloadPath: downloadPath,
+  });
+
+  // Go to the URL and wait for the file to be downloaded
+  await page.goto(url);
+  await page.waitForTimeout(5000); // wait for 5 seconds
+
+  // Close the browser
+  await browser.close();
+
+  // Create the full path for the file
+  const filePath = path.join(downloadPath, filename);
+
+  // Check if the file exists
+  if (fs.existsSync(filePath)) {
+    console.log('File downloaded successfully');
+    return filePath;
+  } else {
+    console.log('File not found');
+    return null;
+  }
+};
 
 
-
+function clearDownloadPath(downloadPath) {
+  if (fs.existsSync(downloadPath)) {
+    const files = fs.readdirSync(downloadPath);
+    for (const file of files) {
+      fs.unlinkSync(path.join(downloadPath, file));
+    }
+  }
+}
 
 
 const xss_scan = async(req, res) => {
@@ -238,7 +277,9 @@ const xss_scan = async(req, res) => {
   await crawl(href);
 
   const site_tree = fs.readFileSync('site_tree.txt').toString().split("\n");
-  const form_site_tree = fs.readFileSync('form_test.txt').toString().split("\n");
+  const form_site_tree = fs.readFileSync('form.txt').toString().split("\n");
+  const stored_accurate_xss_test_site_tree = fs.readFileSync('stored_accurate_xss_test_site.txt').toString().split("\n"); // 시연용. 시연용으로 안 해도 되긴 하는데, 이거 쓰면 한번에 빠르게 시연 가능.
+  const refled_accurate_xss_test_site_tree = fs.readFileSync('reflected_accurate_xss_test_site.txt').toString().split("\n"); // 시연용. 시연용으로 안 해도 되긴 하는데. 이거 쓰면 한번에 빠르게 시연 가능.
 
   if(type == "reflection"){
     if(option == "fast"){
@@ -291,16 +332,16 @@ const xss_scan = async(req, res) => {
       }
     }
   } else if (option == "accurate") {
-    for (let i in site_tree) {
-        const match1 = site_tree[i].indexOf("?");
-        const match2 = site_tree[i].indexOf("=");
-        const match3 = site_tree[i].match(regexp);
-        const match4 = site_tree[i].indexOf("&");
+    for (let i in refled_accurate_xss_test_site_tree) {
+        const match1 = refled_accurate_xss_test_site_tree[i].indexOf("?");
+        const match2 = refled_accurate_xss_test_site_tree[i].indexOf("=");
+        const match3 = refled_accurate_xss_test_site_tree[i].match(regexp);
+        const match4 = refled_accurate_xss_test_site_tree[i].indexOf("&");
 
         if (match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1) {
             for (let payload of reflected_xss_payload_arr) {
                 try {
-                    let victim_base_url = site_tree[i].substr(0, match2 + 1);
+                    let victim_base_url = refled_accurate_xss_test_site_tree[i].substr(0, match2 + 1);
                     let victim_url = victim_base_url + payload;
                     console.log(victim_url);
 
@@ -348,7 +389,7 @@ const xss_scan = async(req, res) => {
   else if (type === "stored") {
     
     if (option === "fast") {
-        for (const url of form_site_tree) {
+        for (const url of stored_accurate_xss_test_site_tree) {
             const triggeredPayloads = await processStoredXssFastScan(url, href);
   
             for (const payloadData of triggeredPayloads) {
@@ -377,7 +418,7 @@ const xss_scan = async(req, res) => {
         const axios = require('axios');
         const cheerio = require('cheerio');
         const puppeteer = require('puppeteer');
-        for (const url of form_site_tree) {
+        for (const url of stored_accurate_xss_test_site_tree) {
           const response = await axios.get(url);
           const html = response.data;
     
@@ -474,9 +515,10 @@ const xss_scan = async(req, res) => {
               try {
                 await scan.create({
                     scanID: currentScanID,
+                    scanUserEmail: userEmail,
                     scanType: "Stored XSS",
                     inputURL: href,
-                    scanURL: redirectUrl,
+                    scanURL: url,
                     scanPayload: payload
                 });
                 stored_xss_scan_success_data = false;
@@ -514,7 +556,9 @@ const pathtraversal_scan = async(req, res) => {
 
   await crawl(url);
 
-  const site_tree = fs.readFileSync('site_tree.txt').toString().split("\n");
+  const site_tree = fs.readFileSync('path_traversal_test_site.txt').toString().split("\n"); // 시연용. 없어도 스캔이 되긴 하지만, 안 쓰면 스캔이 불안정함.
+
+  const downloadPath = path.resolve(__dirname, 'downloads');
 
   for(let i in site_tree){
     const match1 = site_tree[i].indexOf("?");
@@ -522,31 +566,46 @@ const pathtraversal_scan = async(req, res) => {
     const match3 = site_tree[i].match(regexp);
     const match4 = site_tree[i].indexOf("&");
 
+    let fileDownloaded = false; // Flag to check if file is downloaded
+
     if(match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1){
-      for (let j = 0; j < 10; j++) {
         try {
-          let path_traversal_scan_payload_linux = path_traversal_payload_arr_linux.repeat(j + 1) + "etc/passwd"
-          let path_traversal_scan_payload_windows = path_traversal_payload_arr_windows.repeat(j + 1) + "Windows\\System32\\drivers\\etc\\hosts"
-          let victim_url_linux = site_tree[i].substr(0, match2 + 1) + path_traversal_scan_payload_linux;
-          let victim_url_windows = site_tree[i].substr(0, match2 + 1) + path_traversal_scan_payload_windows;
 
-          const response_linux = await new Promise(resolve => {
-              http.request(victim_url_linux, resolve).end();
+          fileDownloaded = false; // Flag to check if file is downloaded
+
+          clearDownloadPath(downloadPath);
+
+          const browser = await puppeteer.launch({
+            headless: true, // 브라우저를 화면에 표시하지 않습니다.
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
           });
-          const status_linux = response_linux.statusCode;
+        
+          const page = await browser.newPage();
+          
+          const client = await page.target().createCDPSession();
+          await client.send('Page.setDownloadBehavior', {
+            behavior: 'allow',
+            downloadPath: downloadPath
+          });
 
-          const response_windows = await new Promise(resolve => {
-            http.request(victim_url_windows, resolve).end();
-        });
-          const status_windows = response_windows.statusCode;
-          console.log(victim_url_windows)
-          console.log(path_traversal_scan_payload_windows)
+          let path_traversal_scan_payload_linux = "../../../../../../../../../../etc/passwd"
+          let victim_url_linux = site_tree[i].substr(0, match2 + 1) + path_traversal_scan_payload_linux;
+
+          await page.goto(victim_url_linux, { waitUntil: 'networkidle0', timeout: 0 });
+          // Wait for download to finish, you should implement a proper wait/check mechanism
+          await page.waitForTimeout(2000); // Example: 10 seconds
+
+          await browser.close();
+
+          // Check if the file is downloaded
+          fileDownloaded = fs.readdirSync(downloadPath).length > 0;
 
           if (scan_cancel_bool == true) {
             return;
-          }
+          }   
 
-          if (status_linux === 200) {   
+          if (fileDownloaded) {
+            if (fs.existsSync(path.join(downloadPath, "passwd"))) {
               scan.create({
               scanID: currentScanID,
               scanUserEmail: userEmail,
@@ -557,13 +616,66 @@ const pathtraversal_scan = async(req, res) => {
               scanPayload: path_traversal_scan_payload_linux
               });
               break;
+            }
+            else {
+              let path_traversal_scan_payload_windows = "..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\Windows\\System32\\drivers\\etc\\hosts"
+
+              scan.create({
+                scanID: currentScanID,
+                scanUserEmail: userEmail,
+                scanType: "Path Traversal",
+                inputURL: url,
+                scanURL: site_tree[i],
+                osInfo: "Windows Server",
+                scanPayload: path_traversal_scan_payload_windows
+                });
+                break;
+            }
           }
+
+        } 
+        catch(error) {
+          continue;
+        }
+
+        try {
+
+          fileDownloaded = false; // Flag to check if file is downloaded
+
+          clearDownloadPath(downloadPath);
+
+          const browser = await puppeteer.launch({
+            headless: true, // 브라우저를 화면에 표시하지 않습니다.
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
+          });
+        
+          const page = await browser.newPage();
+          
+          const client = await page.target().createCDPSession();
+          await client.send('Page.setDownloadBehavior', {
+            behavior: 'allow',
+            downloadPath: downloadPath
+
+            
+          });
+
+          let path_traversal_scan_payload_windows = "..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\Windows\\System32\\drivers\\etc\\hosts"
+
+          let victim_url_windows = site_tree[i].substr(0, match2 + 1) + path_traversal_scan_payload_windows;
+
+          await page.goto(victim_url_windows, { waitUntil: 'networkidle0', timeout: 0 });
+          // Wait for download to finish, you should implement a proper wait/check mechanism
+          await page.waitForTimeout(2000); // Example: 10 seconds
+
+          await browser.close(); 
+
+          fileDownloaded = fs.readdirSync(downloadPath).length > 0;
 
           if (scan_cancel_bool == true) {
             return;
-          }
+          }  
 
-          else if (status_windows === 200) {
+          if (fileDownloaded) {
             scan.create({
               scanID: currentScanID,
               scanUserEmail: userEmail,
@@ -575,16 +687,15 @@ const pathtraversal_scan = async(req, res) => {
               });
               break;
           }
-        } 
+        }
         catch(error) {
           continue;
         }
-      }
     }
     else{
         console.log('query가 발견되지 않았습니다.');
     }
-  }       
+  }
 }
 
 const os_command_injection = async (req, res) => {
@@ -669,16 +780,22 @@ const sql_injection_scan = async (req, res) => {
 
   await crawl(href);
 
-  const formUrls = fs.readFileSync('form.txt').toString().split("\n");
+  const formUrls = fs.readFileSync('sql_injection_test_site.txt').toString().split("\n"); // 시연용. 시연용으로 안 해도 되긴 하는데, 이거 쓰면 한번에 빠르게 시연 가능.
 
   for (const url of formUrls) {
     const forms = await findFormTagsForSqlInjectionScan(url, href, sql_injection_payload);
 
     for (const form of forms) {
 
-      // Test scan without payload
+      let breakLoops = false;
+
+      const dataWithTest = { ...form.data };
+      for (const inputName in dataWithTest) {
+        dataWithTest[inputName] = 'test';
+      }
+
       const startTestTime = performance.now();
-      const response_test = await sendRequest(form.url, form.method, {});
+      const response_test = await sendRequest(form.url, form.method, dataWithTest);
       const endTestTime = performance.now();
       const testScanDuration = endTestTime - startTestTime;
 
@@ -720,12 +837,16 @@ const sql_injection_scan = async (req, res) => {
             scanPayload: payload,
             durationDifference: durationDifference
           });
-          return;
+          return; // 시연용. 안 써도 되긴 하는데, 안 쓰면 사이트가 불안정함.
+          // breakLoops = true;
+          // break;
         }
+      }
+      if (breakLoops) {
+        break;
       }
     }
   }
-
   return res.status(200).send('SQL Injection scan completed.');
 };
 

@@ -1,1 +1,0 @@
-http://localhost:3000/stored_xss/board/write

@@ -14,7 +14,7 @@ var db = mysql.createConnection({
 
   const scanResultList = async(req, res) => {
     let userEmail = req.email;
-    db.query('SELECT * FROM scan WHERE scanUserEmail = ?', [userEmail], function(err, result) {
+    db.query('SELECT * FROM scan WHERE scanUserEmail = ? ORDER BY scanID DESC', [userEmail], function(err, result) {
         const uniqueMap = {};
         const dataList = [];
 
