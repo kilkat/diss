@@ -21,6 +21,16 @@ const urlModule = require('url');
 const { performance } = require('perf_hooks');
 const path = require('path');
 
+const mysql = require("mysql2");
+const user = require("../models/users");
+
+var db = mysql.createConnection({
+  host     : 'localhost',
+  user     : 'root',
+  password : 'root',
+  database : 'diss'
+});
+db.connect();
 
 const resultController = require("../controllers/result.ctrl");
 
@@ -313,20 +323,28 @@ const xss_scan = async(req, res) => {
               console.log(`${field}: ${headers[field]}`);
             }
 
-          if (scan_cancel_bool == true) {
-            return;
-          }
+            if (scan_cancel_bool == true) {
+              return;
+            }
 
-          if(body.includes(payload)){
-            scan.create({
-              scanID: currentScanID,
-              scanUserEmail: userEmail,
-              scanType: "Fast Scan Reflected XSS",
-              inputURL: href,
-              scanURL: victim_base_url,
-              scanPayload: payload
-            });
-            // res.redirect("http://127.0.0.1")
+            if(body.includes(payload)){
+              scan.create({
+                scanID: currentScanID,
+                scanUserEmail: userEmail,
+                scanType: "Fast Scan Reflected XSS",
+                inputURL: href,
+                scanURL: victim_base_url,
+                scanPayload: payload
+              });
+              res.json({
+                resultLink: currentScanID,
+                scanID: currentScanID,
+                scanUserEmail: userEmail,
+                scanType: "Fast Scan Reflected XSS",
+                inputURL: href,
+                scanURL: victim_base_url,
+                scanPayload: payload
+              })
           }
         });
       }
@@ -372,6 +390,16 @@ const xss_scan = async(req, res) => {
                             scanPayload: payload
                         });
 
+                        res.json({
+                          resultLink: currentScanID,
+                          scanID: currentScanID,
+                          scanUserEmail: userEmail,
+                          scanType: "Reflected XSS",
+                          inputURL: href,
+                          scanURL: victim_base_url,
+                          scanPayload: payload
+                        })
+
                         xss_scan_success_data = false;
                         break;
                     }
@@ -406,6 +434,15 @@ const xss_scan = async(req, res) => {
                   scanURL: payloadData.url,
                   scanPayload: payloadData.payload
               });
+              res.json({
+                resultLink: currentScanID,
+                scanID: currentScanID,
+                scanUserEmail: userEmail,
+                scanType: "Fast Scan Stored XSS",
+                inputURL: href,
+                scanURL: payloadData.url,
+                scanPayload: payloadData.payload
+              })
             }
         }
     }
@@ -521,7 +558,17 @@ const xss_scan = async(req, res) => {
                     scanURL: url,
                     scanPayload: payload
                 });
+                res.json({
+                  resultLink: currentScanID,
+                  scanID: currentScanID,
+                  scanUserEmail: userEmail,
+                  scanType: "Stored XSS",
+                  inputURL: href,
+                  scanURL: url,
+                  scanPayload: payload
+                })
                 stored_xss_scan_success_data = false;
+                break;
             } catch (error) {
                 console.error("Error while saving to database:", error);
             }
@@ -542,23 +589,14 @@ const xss_scan = async(req, res) => {
 
 const pathtraversal_scan = async(req, res) => {
   const currentScanID = await getNewScanID();
-  scan_cancel_bool = false
+  scan_cancel_bool = false;
 
   const url = req.body.href;
-  const path_traversal_payload_arr_linux = "../";
-  const path_traversal_payload_arr_windows = "..\\";
-  const regexp = /=/g;
-
-  const href = req.body.href;
-  const type = req.body.type;
-  const option = req.body.option;
-  const userEmail = req.email;
-
   await crawl(url);
 
-  const site_tree = fs.readFileSync('path_traversal_test_site.txt').toString().split("\n"); // 시연용. 없어도 스캔이 되긴 하지만, 안 쓰면 스캔이 불안정함.
-
+  const site_tree = fs.readFileSync('path_traversal_test_site.txt').toString().split("\n");
   const downloadPath = path.resolve(__dirname, 'downloads');
+  const regexp = /=/g;
 
   for(let i in site_tree){
     const match1 = site_tree[i].indexOf("?");
@@ -566,137 +604,127 @@ const pathtraversal_scan = async(req, res) => {
     const match3 = site_tree[i].match(regexp);
     const match4 = site_tree[i].indexOf("&");
 
-    let fileDownloaded = false; // Flag to check if file is downloaded
-
     if(match1 !== -1 && match2 !== -1 && match3 && match3.length < 2 && match4 === -1){
-        try {
+      try {
+        clearDownloadPath(downloadPath);
+        let browser = await puppeteer.launch({
+          headless: true,
+          args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        });
+        let page = await browser.newPage();
+        let client = await page.target().createCDPSession();
+        await client.send('Page.setDownloadBehavior', {
+          behavior: 'allow',
+          downloadPath: downloadPath
+        });
 
-          fileDownloaded = false; // Flag to check if file is downloaded
-
-          clearDownloadPath(downloadPath);
-
-          const browser = await puppeteer.launch({
-            headless: true, // 브라우저를 화면에 표시하지 않습니다.
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-          });
-        
-          const page = await browser.newPage();
-          
-          const client = await page.target().createCDPSession();
-          await client.send('Page.setDownloadBehavior', {
-            behavior: 'allow',
-            downloadPath: downloadPath
-          });
-
-          let path_traversal_scan_payload_linux = "../../../../../../../../../../etc/passwd"
-          let victim_url_linux = site_tree[i].substr(0, match2 + 1) + path_traversal_scan_payload_linux;
-
-          await page.goto(victim_url_linux, { waitUntil: 'networkidle0', timeout: 0 });
-          // Wait for download to finish, you should implement a proper wait/check mechanism
-          await page.waitForTimeout(2000); // Example: 10 seconds
-
-          await browser.close();
-
-          // Check if the file is downloaded
-          fileDownloaded = fs.readdirSync(downloadPath).length > 0;
-
-          if (scan_cancel_bool == true) {
-            return;
-          }   
-
-          if (fileDownloaded) {
-            if (fs.existsSync(path.join(downloadPath, "passwd"))) {
-              scan.create({
-              scanID: currentScanID,
-              scanUserEmail: userEmail,
-              scanType: "Path Traversal",
-              inputURL: url,
-              scanURL: site_tree[i],
-              osInfo: "Linux Server",
-              scanPayload: path_traversal_scan_payload_linux
-              });
-              break;
-            }
-            else {
-              let path_traversal_scan_payload_windows = "..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\Windows\\System32\\drivers\\etc\\hosts"
-
-              scan.create({
-                scanID: currentScanID,
-                scanUserEmail: userEmail,
-                scanType: "Path Traversal",
-                inputURL: url,
-                scanURL: site_tree[i],
-                osInfo: "Windows Server",
-                scanPayload: path_traversal_scan_payload_windows
-                });
-                break;
-            }
-          }
-
-        } 
-        catch(error) {
-          continue;
-        }
+        // Linux payload
+        let path_traversal_scan_payload_linux = "../../../../../../../../../../etc/passwd"
+        let victim_url_linux = site_tree[i].substr(0, match2 + 1) + path_traversal_scan_payload_linux;
 
         try {
-
-          fileDownloaded = false; // Flag to check if file is downloaded
-
-          clearDownloadPath(downloadPath);
-
-          const browser = await puppeteer.launch({
-            headless: true, // 브라우저를 화면에 표시하지 않습니다.
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-          });
-        
-          const page = await browser.newPage();
-          
-          const client = await page.target().createCDPSession();
-          await client.send('Page.setDownloadBehavior', {
-            behavior: 'allow',
-            downloadPath: downloadPath
-
-            
-          });
-
-          let path_traversal_scan_payload_windows = "..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\Windows\\System32\\drivers\\etc\\hosts"
-
-          let victim_url_windows = site_tree[i].substr(0, match2 + 1) + path_traversal_scan_payload_windows;
-
-          await page.goto(victim_url_windows, { waitUntil: 'networkidle0', timeout: 0 });
-          // Wait for download to finish, you should implement a proper wait/check mechanism
-          await page.waitForTimeout(2000); // Example: 10 seconds
-
-          await browser.close(); 
-
-          fileDownloaded = fs.readdirSync(downloadPath).length > 0;
-
-          if (scan_cancel_bool == true) {
-            return;
-          }  
-
-          if (fileDownloaded) {
-            scan.create({
-              scanID: currentScanID,
-              scanUserEmail: userEmail,
-              scanType: "Path Traversal",
-              inputURL: url,
-              scanURL: site_tree[i],
-              osInfo: "Windows Server",
-              scanPayload: path_traversal_scan_payload_windows
-              });
-              break;
-          }
+          await page.goto(victim_url_linux, { waitUntil: 'networkidle0', timeout: 5000 });
+        } catch (error) {
+          console.log(`Error navigating to URL: ${error}`);
         }
-        catch(error) {
-          continue;
+
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        await browser.close();
+
+        let fileDownloaded = fs.readdirSync(downloadPath).length > 0;
+
+        if (scan_cancel_bool == true) {
+          return;
         }
-    }
-    else{
-        console.log('query가 발견되지 않았습니다.');
+
+        if (fileDownloaded) {
+          scan.create({
+            scanID: currentScanID,
+            scanUserEmail: req.email,
+            scanType: "Path Traversal",
+            inputURL: url,
+            scanURL: site_tree[i],
+            osInfo: "Linux Server",
+            scanPayload: path_traversal_scan_payload_linux
+          });
+          res.json({
+            resultLink: currentScanID,
+            scanID: currentScanID,
+            scanUserEmail: req.email,
+            scanType: "Path Traversal",
+            inputURL: url,
+            scanURL: site_tree[i],
+            osInfo: "Linux Server",
+            scanPayload: path_traversal_scan_payload_linux
+          });
+          break;
+        }
+
+        // Windows payload
+        browser = await puppeteer.launch({
+          headless: true,
+          args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        });
+        page = await browser.newPage();
+        client = await page.target().createCDPSession();
+        await client.send('Page.setDownloadBehavior', {
+          behavior: 'allow',
+          downloadPath: downloadPath
+        });
+
+        let path_traversal_scan_payload_windows = "..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\Windows\\System32\\drivers\\etc\\hosts";
+        let victim_url_windows = site_tree[i].substr(0, match2 + 1) + path_traversal_scan_payload_windows;
+
+        try {
+          await page.goto(victim_url_windows, { waitUntil: 'networkidle0', timeout: 5000 });
+        } catch (error) {
+          console.log(`Error navigating to URL: ${error}`);
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        await browser.close();
+
+        fileDownloaded = fs.readdirSync(downloadPath).length > 0;
+
+        if (scan_cancel_bool == true) {
+          return;
+        }
+
+        if (fileDownloaded) {
+          scan.create({
+            scanID: currentScanID,
+            scanUserEmail: req.email,
+            scanType: "Path Traversal",
+            inputURL: url,
+            scanURL: site_tree[i],
+            osInfo: "Windows Server",
+            scanPayload: path_traversal_scan_payload_windows
+          });
+          res.json({
+            resultLink: currentScanID,
+            scanID: currentScanID,
+            scanUserEmail: req.email,
+            scanType: "Path Traversal",
+            inputURL: url,
+            scanURL: site_tree[i],
+            osInfo: "Windows Server",
+            scanPayload: path_traversal_scan_payload_windows
+          });
+          break;
+        }
+
+      } catch(error) {
+        console.log(error);
+        continue;
+      }
+    } else {
+      console.log('Query not found.');
     }
   }
 }
+
+
+
 
 const os_command_injection = async (req, res) => {
   const currentScanID = await getNewScanID();
@@ -755,6 +783,17 @@ const os_command_injection = async (req, res) => {
                 osInfo: os_info_os_command_injection,
                 scanPayload: os_command_injection_payload,
               });
+
+              res.json({
+                resultLink: currentScanID,
+                scanID: currentScanID,
+                scanUserEmail: userEmail,
+                scanType: "OS Command Injection",
+                inputURL: href,
+                scanURL: victim_base_url,
+                osInfo: os_info_os_command_injection,
+                scanPayload: os_command_injection_payload,
+              })
 
               os_command_injection_success_data = false;
               break;
@@ -835,8 +874,18 @@ const sql_injection_scan = async (req, res) => {
             inputURL: href,
             scanURL: form.url,
             scanPayload: payload,
-            durationDifference: durationDifference
           });
+
+          res.json({
+            resultLink: currentScanID,
+            scanID: currentScanID,
+            scanUserEmail: userEmail,
+            scanType: "SQL Injection",
+            inputURL: href,
+            scanURL: form.url,
+            scanPayload: payload,
+          })
+
           return; // 시연용. 안 써도 되긴 하는데, 안 쓰면 사이트가 불안정함.
           // breakLoops = true;
           // break;

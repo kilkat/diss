@@ -1,2 +1,2 @@
-http://127.0.0.1:3000/sql_injection
-http://127.0.0.1:3000/stored_xss/board/write
+http://192.168.222.136/sql_injection
+http://192.168.222.136/stored_xss/board/write
